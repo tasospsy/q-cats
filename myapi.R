@@ -33,6 +33,6 @@ function(req, res) {
   # Debug: print what Qualtrics sent
   print(body) 
   
-  score <- as.numeric(body$answer1) + as.numeric(body$answer2)
+  score <- as.numeric(body$answer1)*10 + as.numeric(body$answer2)*10
   list(score = score)
 }
