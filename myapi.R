@@ -57,6 +57,7 @@ function(req, res) {
   
   next_q_number <- sample(1:9,1)
   next_q <- myenv$qs[next_q_number]
+  message(paste("\n", next_q, "\n"))
   myenv$ud_se <- se
   
   list(se = se, next_q = next_q)
