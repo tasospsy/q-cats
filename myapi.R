@@ -41,11 +41,13 @@ questions <- c(
   "Moving or speaking so slowly that other people could have noticed.  Or the opposite    being so figety or restless that you have been  moving around a lot more than usual",
   "Thoughts that you would be better off dead, or of hurting yourself"
 )
-
+J <- length(questions)
 ## Env variables
 myenv <- new.env()
 myenv$ud_se <- NULL # user defined standard error
 myenv$qs <- questions # user defined standard error
+myenv$pat <- rep(NA, J)
+myenv$itembank <- rep(TRUE, J)
 
 #* @post /test
 function(req, res) {
@@ -55,10 +57,29 @@ function(req, res) {
   se <- as.numeric(body$slider) 
   message("\nIter is: ", as.numeric(body$iter))
   
-  next_q_number <- sample(1:9,1)
-  next_q <- myenv$qs[next_q_number]
+  first_q_number <- sample(which(myenv$itembank), 1)
+  next_q <- myenv$qs[first_q_number]
+  myenv$itembank[first_q_number] <- FALSE
   message(paste("\n", next_q, "\n"))
   myenv$ud_se <- se
   
-  list(se = se, next_q = next_q)
+  list(se = se, next_q = next_q, q_number = first_q_number)
+}
+
+# cat api -----------------------------------------------------------------
+
+#* @post /cat
+function(req, res) {
+  body <- jsonlite::fromJSON(req$postBody)
+  resp <- as.numeric(body$q_resp) 
+  pat <- myenv$pat # read the env var pat
+  pat[as.numeric(body$q_number)] <- resp # update it
+  myenv$pat <- pat #save it again 
+  
+  next_q_number <- sample(sample(which(myenv$itembank), 1))
+  myenv$itembank[next_q_number] <- FALSE #update the itembank
+  item <- myenv$qs[next_q_number] # read the item chr
+  
+  list(pat = pat, q_number = next_q_number, 
+       item = item)
 }
