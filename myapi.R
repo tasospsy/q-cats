@@ -2,6 +2,7 @@
 library(plumber)
 library(jsonlite)
 
+# SETTINGS  ---------------------------------------------------------------
 #* @filter cors
 function(req, res) {
   res$setHeader("Access-Control-Allow-Origin", "*")
@@ -16,7 +17,6 @@ function(req, res) {
   forward()
 }
 
-
 #* @filter check_api_key
 function(req, res) {
   token <- req$HTTP_X_API_KEY
@@ -26,13 +26,18 @@ function(req, res) {
   }
   forward()
 }
+# END SETTINGS ------------------------------------------------------------
+## Env variables
+myenv <- new.env()
+myenv$ud_se <- NULL # user defined standard error
 
-#* @post /score
+#* @post /test
 function(req, res) {
   body <- jsonlite::fromJSON(req$postBody)
   # Debug: print what Qualtrics sent
-  print(body) 
-  
-  score <- as.numeric(body$answer1)*10 + as.numeric(body$answer2)*10
-  list(score = score)
+  #print(body) 
+  se <- as.numeric(body$slider) 
+  print("Iter is: ", as.numeric(iter))
+  myenv$ud_se <- se
+  list(se = se)
 }
