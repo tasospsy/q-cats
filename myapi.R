@@ -55,18 +55,16 @@ function(req, res) {
     myenv$itembank <- rep(TRUE, J)
   }
   body <- jsonlite::fromJSON(req$postBody)
-  # Debug: print what Qualtrics sent
-  #print(body) 
   se <- as.numeric(body$slider) 
-  message("\nIter is: ", as.numeric(body$iter))
   
-  first_q_number <- sample(which(myenv$itembank), 1)
-  next_q <- myenv$qs[first_q_number]
-  myenv$itembank[first_q_number] <- FALSE
-  message(paste("\n", next_q, "\n"))
+  next_item_num <- sample(which(myenv$itembank), 1)
+  myenv$itembank[next_item_num] <- FALSE
+  
   myenv$ud_se <- se
   
-  list(se = se, next_q = next_q, item_num = first_q_number, 
+  list(se = se, 
+       next_q = myenv$qs[next_item_num], 
+       item_num = next_item_num, 
        itembank = myenv$itembank)
 }
 
@@ -75,17 +73,19 @@ function(req, res) {
 #* @post /cat
 function(req, res) {
   body <- jsonlite::fromJSON(req$postBody)
+  
   resp <- as.numeric(body$q_resp) 
   item_num <- as.numeric(body$item_num)
   
-  pat <- myenv$pat # read the env var pat
-  pat[item_num] <- resp # update it
-  myenv$pat <- pat #save it again 
+  myenv$pat[item_num] <- resp
   
   next_item_num <- sample(which(myenv$itembank), 1)
-  myenv$itembank[next_item_num] <- FALSE #update the itembank
+  myenv$itembank[next_item_num] <- FALSE
+  
   item <- myenv$qs[next_item_num] # read the item chr
   
-  list(pat = pat, item_num = next_item_num, 
-       item = item)
+  list(pat = myenv$pat, 
+       item_num = next_item_num, 
+       item = item,
+       itembank = myenv$itembank)
 } 
