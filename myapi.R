@@ -63,7 +63,7 @@ function(req, res) {
   message(paste("\n", next_q, "\n"))
   myenv$ud_se <- se
   
-  list(se = se, next_q = next_q, q_number = first_q_number)
+  list(se = se, next_q = next_q, item_num = first_q_number)
 }
 
 # cat api -----------------------------------------------------------------
@@ -72,14 +72,15 @@ function(req, res) {
 function(req, res) {
   body <- jsonlite::fromJSON(req$postBody)
   resp <- as.numeric(body$q_resp) 
+  item_num <- as.numeric(body$item_num)
   pat <- myenv$pat # read the env var pat
-  pat[as.numeric(body$q_number)] <- resp # update it
+  pat[item_num] <- resp # update it
   myenv$pat <- pat #save it again 
   
-  next_q_number <- sample(which(myenv$itembank), 1)
-  myenv$itembank[next_q_number] <- FALSE #update the itembank
-  item <- myenv$qs[next_q_number] # read the item chr
+  next_item_num <- sample(which(myenv$itembank), 1)
+  myenv$itembank[next_item_num] <- FALSE #update the itembank
+  item <- myenv$qs[next_item_num] # read the item chr
   
-  list(pat = pat, q_number = next_q_number, 
+  list(pat = pat, item_num = next_item_num, 
        item = item)
-}
+} 
