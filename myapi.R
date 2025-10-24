@@ -37,7 +37,7 @@ function(req, res) {
   # Debug: print what Qualtrics sent
   #print(body) 
   se <- as.numeric(body$slider) 
-  print("Iter is: ", as.numeric(iter))
+  print("Iter is: ", as.numeric(body$iter))
   myenv$ud_se <- se
   list(se = se)
 }
