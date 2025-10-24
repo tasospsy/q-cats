@@ -76,7 +76,7 @@ function(req, res) {
   pat[as.numeric(body$q_number)] <- resp # update it
   myenv$pat <- pat #save it again 
   
-  next_q_number <- sample(sample(which(myenv$itembank), 1))
+  next_q_number <- sample(which(myenv$itembank), 1)
   myenv$itembank[next_q_number] <- FALSE #update the itembank
   item <- myenv$qs[next_q_number] # read the item chr
   
