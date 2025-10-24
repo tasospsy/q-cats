@@ -50,8 +50,10 @@ myenv$qs <- questions # user defined standard error
 
 #* @post /test
 function(req, res) {
-  myenv$pat <- rep(NA, J)
-  myenv$itembank <- rep(TRUE, J)
+  if (is.null(myenv$pat)) {
+    myenv$pat <- rep(NA, J)
+    myenv$itembank <- rep(TRUE, J)
+  }
   body <- jsonlite::fromJSON(req$postBody)
   # Debug: print what Qualtrics sent
   #print(body) 
@@ -64,7 +66,8 @@ function(req, res) {
   message(paste("\n", next_q, "\n"))
   myenv$ud_se <- se
   
-  list(se = se, next_q = next_q, item_num = first_q_number)
+  list(se = se, next_q = next_q, item_num = first_q_number, 
+       itembank = myenv$itembank)
 }
 
 # cat api -----------------------------------------------------------------
@@ -74,6 +77,7 @@ function(req, res) {
   body <- jsonlite::fromJSON(req$postBody)
   resp <- as.numeric(body$q_resp) 
   item_num <- as.numeric(body$item_num)
+  
   pat <- myenv$pat # read the env var pat
   pat[item_num] <- resp # update it
   myenv$pat <- pat #save it again 
