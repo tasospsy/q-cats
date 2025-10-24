@@ -46,11 +46,12 @@ J <- length(questions)
 myenv <- new.env()
 myenv$ud_se <- NULL # user defined standard error
 myenv$qs <- questions # user defined standard error
-myenv$pat <- rep(NA, J)
-myenv$itembank <- rep(TRUE, J)
+
 
 #* @post /test
 function(req, res) {
+  myenv$pat <- rep(NA, J)
+  myenv$itembank <- rep(TRUE, J)
   body <- jsonlite::fromJSON(req$postBody)
   # Debug: print what Qualtrics sent
   #print(body) 
