@@ -29,6 +29,8 @@ function(req, res) {
 # END SETTINGS ------------------------------------------------------------
 
 # CAT specs ---------------------------------------------------------------
+library(mirt)
+library(mirtCAT)
 ## READ CAT SPECS
 link <- "https://github.com/tasospsy/q-cats/raw/refs/heads/main/calibrations/phq9-irt-cal-results.RData"
 load(url(link))
