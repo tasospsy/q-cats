@@ -35,25 +35,31 @@ load(url(link))
 J <- length(questions)
 ## Env variables
 myenv <- new.env()
-myenv$ud_se <- NULL # user defined standard error
+myenv$stop_crit <- NULL # user defined standard error
 myenv$qs <- questions # user defined standard error
 myenv$mod <- mod
+myenv$iter <- 0L
+myenv$catdesign <- NULL
 
-#* @post /test
+#* @post /init
 function(req, res) {
   if (is.null(myenv$pat)) {
     myenv$pat <- rep(NA, J)
     myenv$itembank <- rep(TRUE, J)
   }
   body <- jsonlite::fromJSON(req$postBody)
-  se <- as.numeric(body$slider) 
-  
-  next_item_num <- sample(which(myenv$itembank), 1)
+  stop_crit <- as.numeric(body$slider) 
+  myenv$stop_crit <- stop_crit
+  ## Algorithm
+  # w/out stopping rule
+  CATdesign <- mirtCAT(mo = mod, criteria = 'MI', design_elements = TRUE, 
+                       start_item = 'MI', design = list(min_items = J))
+  next_item_num <- mirtCAT::findNextItem(CATdesign)
   myenv$itembank[next_item_num] <- FALSE
-  
-  myenv$ud_se <- se
-  
-  list(se = se, 
+  myenv$catdesign <- CATdesign
+  myenv$iter = myenv$iter + 1L
+  list(iter = myenv$iter,
+       stop_crit = stop_crit, 
        next_q = myenv$qs[next_item_num], 
        item_num = next_item_num, 
        itembank = myenv$itembank)
@@ -65,18 +71,26 @@ function(req, res) {
 function(req, res) {
   body <- jsonlite::fromJSON(req$postBody)
   
-  resp <- as.numeric(body$q_resp) 
-  item_num <- as.numeric(body$item_num)
+  resp <- as.numeric(body$q_resp) # a
+  item_num <- as.numeric(body$item_num) # b
+  ## pass the response to the algorithm
+  # update CAT:
+  CATdesign <- mirtCAT::updateDesign(myenv$catdesign, 
+                                     new_item = item_num, # b
+                                     new_response = resp) # a
+  #iter <- sum(!is.na(CATdesign$person$items_answered))
+  myenv$pat <- CATdesign$person$responses
+  theta <- round(as.numeric(CATdesign$person$thetas),3) # current theta estimate
+  current_se <- round(as.numeric(CATdesign$person$thetas_SE_history[myenv$iter + 1L,]),2)
+  ## next item:
+  next_item_num <- mirtCAT::findNextItem(CATdesign)
+  #myenv$itembank[next_item_num] <- FALSE
+  myenv$catdesign <- CATdesign
   
-  myenv$pat[item_num] <- resp
-  
-  next_item_num <- sample(which(myenv$itembank), 1)
-  myenv$itembank[next_item_num] <- FALSE
-  
-  item <- myenv$qs[next_item_num] # read the item chr
-  
-  list(pat = myenv$pat, 
+  list(iter = myenv$iter + 1L,
+       pat = myenv$pat, 
        item_num = next_item_num, 
-       item = item,
-       itembank = myenv$itembank)
+       item = myenv$qs[next_item_num], # read and post the item chr,
+       se_thetahat = current_se,
+       thetahat = theta)
 } 
