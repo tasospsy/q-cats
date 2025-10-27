@@ -59,7 +59,7 @@ function(req, res) {
   next_item_num <- mirtCAT::findNextItem(CATdesign)
   myenv$itembank[next_item_num] <- FALSE
   myenv$catdesign <- CATdesign
-  myenv$iter = myenv$iter + 1L
+  myenv$iter <- myenv$iter + 1L
   list(iter = myenv$iter,
        stop_crit = stop_crit, 
        next_q = myenv$qs[next_item_num], 
@@ -88,8 +88,8 @@ function(req, res) {
   next_item_num <- mirtCAT::findNextItem(CATdesign)
   #myenv$itembank[next_item_num] <- FALSE
   myenv$catdesign <- CATdesign
-  
-  list(iter = myenv$iter + 1L,
+  myenv$iter <- myenv$iter + 1L # important for SE(theta)
+  list(iter = myenv$iter,
        pat = myenv$pat, 
        item_num = next_item_num, 
        item = myenv$qs[next_item_num], # read and post the item chr,
