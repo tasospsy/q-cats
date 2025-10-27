@@ -96,3 +96,4 @@ function(req, res) {
        se_thetahat = current_se,
        thetahat = theta)
 } 
+
