@@ -83,7 +83,7 @@ function(req, res) {
   #iter <- sum(!is.na(CATdesign$person$items_answered))
   myenv$pat <- CATdesign$person$responses
   theta <- round(as.numeric(CATdesign$person$thetas),3) # current theta estimate
-  current_se <- round(as.numeric(CATdesign$person$thetas_SE_history[myenv$iter,]),2)
+  current_se <- round(as.numeric(CATdesign$person$thetas_SE_history[myenv$iter+1L,]),2)
   ## next item:
   next_item_num <- mirtCAT::findNextItem(CATdesign)
   #myenv$itembank[next_item_num] <- FALSE
