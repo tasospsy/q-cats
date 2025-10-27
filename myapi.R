@@ -40,11 +40,13 @@ myenv <- new.env()
 myenv$stop_crit <- NULL # user defined standard error
 myenv$qs <- questions # user defined standard error
 myenv$mod <- mod
-myenv$iter <- 0L
-myenv$catdesign <- NULL
+
 
 #* @post /init
 function(req, res) {
+  myenv$iter <- 0L
+  myenv$catdesign <- NULL
+  
   if (is.null(myenv$pat)) {
     myenv$pat <- rep(NA, J)
     myenv$itembank <- rep(TRUE, J)
