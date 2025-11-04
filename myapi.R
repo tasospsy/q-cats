@@ -127,6 +127,7 @@ function(req, res) {
   user$pat <- CATdesign$person$responses
   
   theta <- round(as.numeric(CATdesign$person$thetas), 3)
+  cat(CATdesign$person$thetas_SE_history) #debug
   current_se <- round(as.numeric(
     CATdesign$person$thetas_SE_history[user$iter + 1L, ]
   ), 2)
