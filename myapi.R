@@ -20,7 +20,7 @@ function(req, res) {
 #* @filter check_api_key
 function(req, res) {
   token <- req$HTTP_X_API_KEY
-  if (is.null(token) || token != "MmO1HH7Oeer6iZjgNsLsjENOmXWTJtmq2oPJXhla") {
+  if (is.null(token) || token != "test") {
     res$status <- 401
     return(list(error = "Unauthorized"))
   }
