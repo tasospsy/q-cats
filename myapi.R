@@ -25,7 +25,7 @@ KEY <- "test"
 #* @filter check_api_key
 function(req, res) {
   token <- req$HTTP_X_API_KEY
-  if (is.null(token) || nchar(token) != KEY) {
+  if (is.null(token) || nchar(token) == 0 || token != KEY) {
     res$status <- 401
     return(list(error = "Missing or invalid key"))
   }
