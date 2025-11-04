@@ -125,13 +125,13 @@ function(req, res) {
 
   user$catdesign <- CATdesign
   user$pat <- CATdesign$person$responses
-  user$iter <- user$iter + 1L
   
   theta <- round(as.numeric(CATdesign$person$thetas), 3)
   current_se <- round(as.numeric(
     CATdesign$person$thetas_SE_history[user$iter + 1L, ]
   ), 2)
   
+  user$iter <- user$iter + 1L
   next_item_num <- mirtCAT::findNextItem(CATdesign)
   next_item_text <- questions[next_item_num]
   
