@@ -144,7 +144,7 @@ function(req, res) {
   # save to disc:
   df <- list()
   df$userid <- userid
-  df$pattern <- user$pattern
+  df$pattern <- user$pat
   df$theta <- theta
   df$se <- current_se
   if(!dir.exists("sessions")) dir.create("sessions", showWarnings = FALSE)
@@ -168,21 +168,27 @@ function(req, res) {
 
 #* @get /download
 function(req, res) {
+  api_key <- req$HTTP_X_API_KEY
+  if (is.null(api_key) || api_key != KEY) {
+    res$status <- 401
+    return(list(error = "Invalid or missing API key"))
+  }
   userid <- req$HTTP_USERID
   if (is.null(userid) || userid == "") {
     res$status <- 400
     return(list(error = "Missing userid header"))
   }
   
-  user <- get_user(userid)
-  if (is.null(user)) {
+  pattern <- paste0("^", userid, "_.*_session\\.json$")
+  files <- list.files("sessions", pattern = pattern, full.names = TRUE)
+  
+  if (length(files) == 0) {
     res$status <- 404
-    return(list(error = "Session not found"))
+    return(list(error = paste("No session file found for user:", userid)))
   }
-  filepath <- file.path("sessions", paste0(
-    userid, "_", 
-    format(Sys.time(), "%d-%m-%Y_%H-%M"), 
-    "_session.json"
-  ))
-  plumber::include_file(filepath)
+  
+  latest_file <- files[which.max(file.info(files)$mtime)]
+  #@todo for multiple files (zip?)!
+  
+  plumber::include_file(latest_file, download = basename(latest_file))
 }
