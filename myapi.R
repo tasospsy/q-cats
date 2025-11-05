@@ -190,7 +190,7 @@ function(req, res) {
     res$status <- 404
     return(list(error = paste("Multiple sessions for user:", userid)))
   }
-  content <- base::readBin(file,'raw',n = file.info(file)$size) #stackover
+  content <- readChar(file, nchars = file.info(file)$size, useBytes = TRUE)
   #@todo for multiple files (zip?)!
   plumber::as_attachment(content, filename = NULL)
 }
