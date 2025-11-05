@@ -192,5 +192,5 @@ function(req, res) {
     return(list(error = paste("Multiple sessions for user:", userid)))
   }
   #@todo for multiple files (zip?)!
-  plumber::include_file(file[1])
+  return(plumber::include_file(file[1]))
 }
