@@ -142,15 +142,16 @@ function(req, res) {
   # save to RAM
   save_user(userid, user)
   # save to disc:
-  df <- list()
-  df$userid <- userid
-  df$pattern <- user$pat
-  df$theta <- theta
-  df$se <- current_se
+  df <- list(
+    userid = userid,
+    responses = user$pat,
+    theta = theta,
+    se = current_se,
+    timestamp = Sys.time()
+  )
   if(!dir.exists("sessions")) dir.create("sessions", showWarnings = FALSE)
   filepath <- file.path("sessions", paste0(
-    userid, "_", 
-    format(Sys.time(), "%d-%m-%Y_%H-%M"), 
+    userid, "_PHQ9", 
     "_session.json"
   ))
   write_json(df, filepath, pretty = TRUE, auto_unbox = TRUE)
@@ -187,8 +188,6 @@ function(req, res) {
     return(list(error = paste("No session file found for user:", userid)))
   }
   
-  latest_file <- files[which.max(file.info(files)$mtime)]
   #@todo for multiple files (zip?)!
-  
-  plumber::include_file(latest_file, download = basename(latest_file))
+  for(fl in files) plumber::include_file(fl)
 }
