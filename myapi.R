@@ -183,11 +183,11 @@ function(req, res) {
   patt <- paste0("^", userid, "_.*_session\\.json$")
   file <- list.files("sessions", pattern = patt, full.names = TRUE)
   
-  if (length(files) == 0) {
+  if (length(file) == 0) {
     res$status <- 404
     return(list(error = paste("No session file found for user:", userid)))
   }
-  if (length(files) > 1) {
+  if (length(file) > 1) {
     res$status <- 404
     return(list(error = paste("Multiple sessions for user:", userid)))
   }
