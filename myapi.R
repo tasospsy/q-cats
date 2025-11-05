@@ -182,7 +182,6 @@ function(req, res) {
   
   patt <- paste0("^", userid, "_.*_session\\.json$")
   file <- list.files("sessions", pattern = patt, full.names = TRUE)
-  cat(file) # debug
   if (length(file) == 0) {
     res$status <- 404
     return(list(error = paste("No session file found for user:", userid)))
@@ -192,6 +191,5 @@ function(req, res) {
     return(list(error = paste("Multiple sessions for user:", userid)))
   }
   #@todo for multiple files (zip?)!
-  cat(file[1])
-  return(plumber::include_file(file[1], download = basename(file[1])))
+  plumber::as_attachment(file[1], filename = NULL)
 }
