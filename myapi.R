@@ -85,7 +85,16 @@ function(req, res) {
   user$iter <- user$iter + 1L
   user$stop_crit <- stop_crit
   
+  # save to RAM
   save_user(userid, user)
+  # save to disc:
+  if(!dir.exists("sessions")) dir.create("sessions", showWarnings = FALSE)
+  filepath <- file.path("sessions", paste0(
+    userid, "_", 
+    format(Sys.time(), "%d-%m-%Y_%H-%M"), 
+    "_session.json"
+  ))
+  write_json(user, filepath, pretty = TRUE, auto_unbox = TRUE)
   
   list(
     userid = userid,
@@ -136,7 +145,16 @@ function(req, res) {
   next_item_num <- mirtCAT::findNextItem(CATdesign)
   next_item_text <- questions[next_item_num]
   
+  # save to RAM
   save_user(userid, user)
+  # save to disc:
+  if(!dir.exists("sessions")) dir.create("sessions", showWarnings = FALSE)
+  filepath <- file.path("sessions", paste0(
+    userid, "_", 
+    format(Sys.time(), "%d-%m-%Y_%H-%M"), 
+    "_session.json"
+  ))
+  write_json(user, filepath, pretty = TRUE, auto_unbox = TRUE)
   
   list(
     userid = userid,
@@ -162,10 +180,10 @@ function(req, res) {
     res$status <- 404
     return(list(error = "Session not found"))
   }
-  
-  dir.create("sessions", showWarnings = FALSE)
-  filepath <- file.path("sessions", paste0(userid, "_session.json"))
-  write_json(user, filepath, pretty = TRUE, auto_unbox = TRUE)
-  
-  include_file(filepath)
+  filepath <- file.path("sessions", paste0(
+    userid, "_", 
+    format(Sys.time(), "%d-%m-%Y_%H-%M"), 
+    "_session.json"
+  ))
+  plumber::include_file(filepath)
 }
