@@ -88,13 +88,7 @@ function(req, res) {
   # save to RAM
   save_user(userid, user)
   # save to disc:
-  if(!dir.exists("sessions")) dir.create("sessions", showWarnings = FALSE)
-  filepath <- file.path("sessions", paste0(
-    userid, "_", 
-    format(Sys.time(), "%d-%m-%Y_%H-%M"), 
-    "_session.json"
-  ))
-  write_json(user, filepath, pretty = TRUE, auto_unbox = TRUE)
+  # not needed?
   
   list(
     userid = userid,
@@ -148,13 +142,18 @@ function(req, res) {
   # save to RAM
   save_user(userid, user)
   # save to disc:
+  df <- list()
+  df$userid <- userid
+  df$pattern <- user$pattern
+  df$theta <- theta
+  df$se <- current_se
   if(!dir.exists("sessions")) dir.create("sessions", showWarnings = FALSE)
   filepath <- file.path("sessions", paste0(
     userid, "_", 
     format(Sys.time(), "%d-%m-%Y_%H-%M"), 
     "_session.json"
   ))
-  write_json(user, filepath, pretty = TRUE, auto_unbox = TRUE)
+  write_json(df, filepath, pretty = TRUE, auto_unbox = TRUE)
   
   list(
     userid = userid,
