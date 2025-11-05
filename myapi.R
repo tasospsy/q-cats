@@ -180,14 +180,17 @@ function(req, res) {
     return(list(error = "Missing userid header"))
   }
   
-  pattern <- paste0("^", userid, "_.*_session\\.json$")
-  files <- list.files("sessions", pattern = pattern, full.names = TRUE)
+  patt <- paste0("^", userid, "_.*_session\\.json$")
+  file <- list.files("sessions", pattern = patt, full.names = TRUE)
   
   if (length(files) == 0) {
     res$status <- 404
     return(list(error = paste("No session file found for user:", userid)))
   }
-  
+  if (length(files) > 1) {
+    res$status <- 404
+    return(list(error = paste("Multiple sessions for user:", userid)))
+  }
   #@todo for multiple files (zip?)!
-  for(fl in files) plumber::include_file(fl)
+  plumber::include_file(file)
 }
