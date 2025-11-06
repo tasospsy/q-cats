@@ -167,7 +167,7 @@ function(req, res) {
   )
 } 
 
-#* @get /download
+#* @get /user-results
 function(req, res) {
   api_key <- req$HTTP_X_API_KEY
   if (is.null(api_key) || api_key != KEY) {
@@ -193,4 +193,27 @@ function(req, res) {
   content <- readChar(file, nchars = file.info(file)$size, useBytes = TRUE)
   #@todo for multiple files (zip?)!
   plumber::as_attachment(content, filename = NULL)
+}
+
+#* @get /get-data
+function(req, res) {
+  api_key <- req$HTTP_X_API_KEY
+  if (is.null(api_key) || api_key != KEY) {
+    res$status <- 401
+    return(list(error = "Invalid or missing API key"))
+  }
+  userid <- req$HTTP_USERID
+  if (is.null(userid) || userid == "") {
+    res$status <- 400
+    return(list(error = "Missing userid header"))
+  }
+  
+  files <- list.files("sessions", full.names = TRUE)
+  tmp <- list()
+  for(f in 1:length(files)) tmp[[f]] <- jsonlite::fromJSON(files[f])
+  res.list <- do.call(rbind, tmp)
+  csv_output <- capture.output(write.csv(res.list, row.names = FALSE))
+  #content <- readChar(file, nchars = file.info(file)$size, useBytes = TRUE)
+  #@todo for multiple files (zip?)!
+  plumber::as_attachment(paste(csv_output, collapse = "\n"), filename = "results.csv")
 }
