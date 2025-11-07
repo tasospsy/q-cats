@@ -206,7 +206,12 @@ function(req, res) {
   tmp <- list()
   for(f in 1:length(files)) tmp[[f]] <- jsonlite::fromJSON(files[f])
   res.df <- as.data.frame(do.call(rbind, tmp))
-  
+  # list-columns to comma-separated strings
+  res.df[] <- lapply(res.df, function(col) {
+    if (is.list(col)) sapply(col, toString) else col
+  })
+  #filename <- paste0("qcat_",Sys.Date(),"sessions.json")
+  #write.csv(res.df,filename, row.names = FALSE)
   #res$setHeader("Content-Type", "text/csv")
   #res$setHeader("Content-Disposition", "attachment; filename=\"qcat_results.csv\"")
   return(res.df)
