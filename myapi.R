@@ -205,7 +205,7 @@ function(req, res) {
   files <- list.files("sessions", full.names = TRUE)
   tmp <- list()
   for(f in 1:length(files)) tmp[[f]] <- jsonlite::fromJSON(files[f])
-  res.df <- do.call(rbind, tmp)
+  res.df <- as.data.frame(do.call(rbind, tmp))
   
   #res$setHeader("Content-Type", "text/csv")
   #res$setHeader("Content-Disposition", "attachment; filename=\"qcat_results.csv\"")
