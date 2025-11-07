@@ -206,7 +206,7 @@ function(req, res) {
   for(f in 1:length(files)) tmp[[f]] <- jsonlite::fromJSON(files[f])
   res.df <- do.call(rbind, tmp)
   
-  res$set_header("Content-Type", "text/csv")
+  res$setHeader("Content-Type", "text/csv")
   write.csv(res.df, row.names = FALSE)
   #plumber::as_attachment(paste(csv_output, collapse = "\n"), filename = "results.csv")
 }
