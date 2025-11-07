@@ -210,9 +210,10 @@ function(req, res) {
   res.df[] <- lapply(res.df, function(col) {
     if (is.list(col)) sapply(col, toString) else col
   })
-  #filename <- paste0("qcat_",Sys.Date(),"sessions.json")
-  #write.csv(res.df,filename, row.names = FALSE)
-  #res$setHeader("Content-Type", "text/csv")
-  #res$setHeader("Content-Disposition", "attachment; filename=\"qcat_results.csv\"")
+  
+  res$setHeader(
+    "Content-Disposition",
+    paste0('attachment; filename="session_data_', format(Sys.time(), "%Y-%m-%d_%H-%M"), '.csv"')
+  )
   return(res.df)
 }
