@@ -207,6 +207,7 @@ function(req, res) {
   res.df <- do.call(rbind, tmp)
   
   res$setHeader("Content-Type", "text/csv")
+  res$setHeader("Content-Disposition", "attachment; filename=\"qcat_results.csv\"")
   write.csv(res.df, row.names = FALSE)
   #plumber::as_attachment(paste(csv_output, collapse = "\n"), filename = "results.csv")
 }
