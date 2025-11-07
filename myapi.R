@@ -194,6 +194,7 @@ function(req, res) {
 }
 
 #* @get /get-data
+#* @serializer csv
 function(req, res) {
   api_key <- req$HTTP_X_API_KEY
   if (is.null(api_key) || api_key != KEY) {
@@ -206,9 +207,7 @@ function(req, res) {
   for(f in 1:length(files)) tmp[[f]] <- jsonlite::fromJSON(files[f])
   res.df <- do.call(rbind, tmp)
   
-  res$setHeader("Content-Type", "text/csv")
-  res$setHeader("Content-Disposition", "attachment; filename=\"qcat_results.csv\"")
-  # Capture CSV as a string and return
-  test <- write.csv(res.df, con, row.names = FALSE)
-  plumber::as_attachment(test, filename = "qcat_results.csv")
+  #res$setHeader("Content-Type", "text/csv")
+  #res$setHeader("Content-Disposition", "attachment; filename=\"qcat_results.csv\"")
+  return(res.df)
 }
