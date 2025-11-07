@@ -192,7 +192,7 @@ function(req, res) {
   }
   content <- readChar(file, nchars = file.info(file)$size, useBytes = TRUE)
   #@todo for multiple files (zip?)!
-  plumber::as_attachment(content, filename = NULL)
+  plumber::as_attachment(content, filename = NULL) #actually needed?
 }
 
 #* @get /get-data
@@ -202,18 +202,14 @@ function(req, res) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
-  userid <- req$HTTP_USERID
-  if (is.null(userid) || userid == "") {
-    res$status <- 400
-    return(list(error = "Missing userid header"))
-  }
   
   files <- list.files("sessions", full.names = TRUE)
   tmp <- list()
   for(f in 1:length(files)) tmp[[f]] <- jsonlite::fromJSON(files[f])
-  res.list <- do.call(rbind, tmp)
-  csv_output <- capture.output(write.csv(res.list, row.names = FALSE))
-  #content <- readChar(file, nchars = file.info(file)$size, useBytes = TRUE)
-  #@todo for multiple files (zip?)!
-  plumber::as_attachment(paste(csv_output, collapse = "\n"), filename = "results.csv")
+  res.df <- do.call(rbind, tmp)
+  
+  plumber::set_header("Content-Type", "text/csv")
+  
+  write.csv(res.df, row.names = FALSE)
+  #plumber::as_attachment(paste(csv_output, collapse = "\n"), filename = "results.csv")
 }
