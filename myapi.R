@@ -209,8 +209,6 @@ function(req, res) {
   res$setHeader("Content-Type", "text/csv")
   res$setHeader("Content-Disposition", "attachment; filename=\"qcat_results.csv\"")
   # Capture CSV as a string and return
-  con <- textConnection("out", "w", local = TRUE)
-  write.csv(res.df, con, row.names = FALSE)
-  close(con)
-  return(out)
+  test <- write.csv(res.df, con, row.names = FALSE)
+  plumber::as_attachment(test, filename = "qcat_results.csv")
 }
