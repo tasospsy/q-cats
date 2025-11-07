@@ -209,6 +209,8 @@ function(req, res) {
   res$setHeader("Content-Type", "text/csv")
   res$setHeader("Content-Disposition", "attachment; filename=\"qcat_results.csv\"")
   # Capture CSV as a string and return
-  csv_output <- paste(capture.output(write.csv(res.df, row.names = FALSE)), collapse = "\n")
-  return(csv_output)
+  con <- textConnection("out", "w", local = TRUE)
+  write.csv(res.df, con, row.names = FALSE)
+  close(con)
+  return(out)
 }
