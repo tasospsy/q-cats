@@ -64,8 +64,6 @@ function(req, res) {
     return(list(error = "Missing userid header"))
   }
   # create new session if none exists
-  user <- get_user(userid)
-  if (is.null(user)) {
     user <- list(
       iter = 0L,
       pat = rep(NA, J),
@@ -73,7 +71,6 @@ function(req, res) {
       stop_crit = stop_crit,
       catdesign = NULL
     )
-  }
   
   ## Algorithm
   CATdesign <- mirtCAT(mo = mod, criteria = 'MI', design_elements = TRUE, 
@@ -142,7 +139,7 @@ function(req, res) {
     # save responses to RAM
     save_user(userid, user)
     # list to return:
-    tmplist <- list(
+    list(
       userid = userid,
       iter = user$iter,
       pat = user$pat,
@@ -150,7 +147,7 @@ function(req, res) {
       item = next_item_text,
       se_thetahat = current_se,
       thetahat = theta,
-      stop = FALSE
+      stop = 0
     )} 
   
   if(current_se <= user$stop_crit || length(user$pat) == J) {# stop! & save
@@ -168,7 +165,7 @@ function(req, res) {
       "_session.json"
     ))
     write_json(df, filepath, pretty = TRUE, auto_unbox = TRUE)
-    tmplist <- list(
+    list(
       userid = userid,
       iter = user$iter,
       pat = user$pat,
@@ -176,9 +173,9 @@ function(req, res) {
       item = NA,
       se_thetahat = current_se,
       thetahat = theta,
-      stop = TRUE
+      stop = 1
     )} 
-  return(tmplist) 
+  
 } 
 
 #* @get /user-results
