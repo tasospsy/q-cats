@@ -172,7 +172,7 @@ function(req, res) {
     write_json(df, filepath, pretty = TRUE, auto_unbox = TRUE)
     list(
       userid = userid,
-      iter = NA,
+      iter = user$iter,
       pat = user$pat,
       item_num = NA,
       item = NA,
