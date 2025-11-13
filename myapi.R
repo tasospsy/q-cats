@@ -139,15 +139,17 @@ function(req, res) {
     # save responses to RAM
     save_user(userid, user)
     # list to return:
-    list(
-      userid = userid,
-      iter = user$iter,
-      pat = user$pat,
-      item_num = next_item_num,
-      item = next_item_text,
-      se_thetahat = current_se,
-      thetahat = theta,
-      stop = 0
+    return(
+      list(
+        userid = userid,
+        iter = user$iter,
+        pat = user$pat,
+        item_num = next_item_num,
+        item = next_item_text,
+        se_thetahat = current_se,
+        thetahat = theta,
+        stop = 0
+      )
     )} 
   
   if(current_se <= user$stop_crit) {# stop! & save
@@ -165,17 +167,18 @@ function(req, res) {
       "_session.json"
     ))
     write_json(df, filepath, pretty = TRUE, auto_unbox = TRUE)
-    list(
-      userid = userid,
-      iter = user$iter,
-      pat = user$pat,
-      item_num = NA,
-      item = NA,
-      se_thetahat = current_se,
-      thetahat = theta,
-      stop = 1
+    return(
+      list(
+        userid = userid,
+        iter = user$iter,
+        pat = user$pat,
+        item_num = NA,
+        item = NA,
+        se_thetahat = current_se,
+        thetahat = theta,
+        stop = 1
+      )
     )} 
-  
 } 
 
 #* @get /user-results
