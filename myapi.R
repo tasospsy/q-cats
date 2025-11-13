@@ -130,7 +130,6 @@ function(req, res) {
   user$pat <- CATdesign$person$responses
   
   theta <- round(as.numeric(CATdesign$person$thetas), 3)
-  cat(CATdesign$person$thetas_SE_history, "\n") #debug
   current_se <- round(as.numeric(
     CATdesign$person$thetas_SE_history[user$iter + 1L, ]
   ), 2)
@@ -144,7 +143,7 @@ function(req, res) {
     # save responses to RAM
     save_user(userid, user)
     # list to return:
-    list(
+    tmplist <- list(
       userid = userid,
       iter = user$iter,
       pat = user$pat,
@@ -170,7 +169,7 @@ function(req, res) {
       "_session.json"
     ))
     write_json(df, filepath, pretty = TRUE, auto_unbox = TRUE)
-    list(
+    tmplist <- list(
       userid = userid,
       iter = user$iter,
       pat = user$pat,
@@ -180,7 +179,7 @@ function(req, res) {
       thetahat = theta,
       stop = TRUE
     )} 
-  return(list) 
+  return(tmplist) 
 } 
 
 #* @get /user-results
