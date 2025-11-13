@@ -150,7 +150,7 @@ function(req, res) {
       stop = 0
     )} 
   
-  if(current_se <= user$stop_crit || length(user$pat) == J) {# stop! & save
+  if(current_se <= user$stop_crit || sum(!is.na(user$pat)) == J) {# stop! & save
     # save to disc:
     df <- list(
       userid = userid,
