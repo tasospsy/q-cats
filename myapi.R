@@ -78,14 +78,13 @@ function(req, res) {
   ## Algorithm
   CATdesign <- mirtCAT(mo = mod, criteria = 'MI', design_elements = TRUE, 
                        start_item = 'MI', 
-                       #design = list(min_items = J)) #v0.1 w/ stop on Qualtrics
-                       design = list(min_SEM = stop_crit)) #v0.2 w/ stop rule inside server
+                       design = list(min_items = J)) #v0.1 w/ stop on Qualtrics
   next_item_num <- mirtCAT::findNextItem(CATdesign)
   
   user$catdesign <- CATdesign
   user$itembank[next_item_num] <- FALSE
   user$iter <- user$iter + 1L
-  #user$stop_crit <- stop_crit
+  user$stop_crit <- stop_crit
   
   # save to RAM
   save_user(userid, user)
@@ -93,7 +92,7 @@ function(req, res) {
   list(
     userid = userid,
     iter = user$iter,
-    #stop_crit = stop_crit,
+    stop_crit = user$stop_crit,
     next_q = questions[next_item_num],
     item_num = next_item_num,
     itembank = user$itembank
@@ -135,9 +134,9 @@ function(req, res) {
   ), 2)
   cat(userid, ": SE of theta est. is ",current_se,"\n")
   
-  next_item_num <- mirtCAT::findNextItem(CATdesign)
   
-  if(!is.na(next_item_num)) { #Continue:
+  if(current_se > user$stop_crit) { #Continue:
+    next_item_num <- mirtCAT::findNextItem(CATdesign)
     user$iter <- user$iter + 1L
     next_item_text <- questions[next_item_num]
     # save responses to RAM
@@ -154,7 +153,7 @@ function(req, res) {
       stop = FALSE
     )} 
   
-  if(is.na(next_item_num)) {# stop! & save
+  if(current_se <= user$stop_crit || length(user$pat) == J) {# stop! & save
     # save to disc:
     df <- list(
       userid = userid,
