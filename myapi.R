@@ -40,6 +40,7 @@ library(mirtCAT)
 link <- "https://github.com/tasospsy/q-cats/raw/refs/heads/main/calibrations/phq9-irt-cal-results.RData"
 load(url(link))
 J <- length(questions)
+catName <- "PHQ9"
 
 ## Global settings
 sessions <- new.env(parent = emptyenv())
@@ -63,7 +64,7 @@ function(req, res) {
     return(list(error = "Missing userid header"))
   }
   # create new session if none exists
-  user <- sessions[[userid]]
+  user <- get_user(userid)
   if (is.null(user)) {
     user <- list(
       iter = 0L,
@@ -75,25 +76,24 @@ function(req, res) {
   }
   
   ## Algorithm
-  # w/out stopping rule
   CATdesign <- mirtCAT(mo = mod, criteria = 'MI', design_elements = TRUE, 
-                       start_item = 'MI', design = list(min_items = J))
+                       start_item = 'MI', 
+                       #design = list(min_items = J)) #v0.1 w/ stop on Qualtrics
+                       design = list(min_SEM = stop_crit)) #v0.2 w/ stop rule inside server
   next_item_num <- mirtCAT::findNextItem(CATdesign)
   
   user$catdesign <- CATdesign
   user$itembank[next_item_num] <- FALSE
   user$iter <- user$iter + 1L
-  user$stop_crit <- stop_crit
+  #user$stop_crit <- stop_crit
   
   # save to RAM
   save_user(userid, user)
-  # save to disc:
-  # not needed?
   
   list(
     userid = userid,
     iter = user$iter,
-    stop_crit = stop_crit,
+    #stop_crit = stop_crit,
     next_q = questions[next_item_num],
     item_num = next_item_num,
     itembank = user$itembank
@@ -130,41 +130,57 @@ function(req, res) {
   user$pat <- CATdesign$person$responses
   
   theta <- round(as.numeric(CATdesign$person$thetas), 3)
-  cat(CATdesign$person$thetas_SE_history) #debug
+  cat(CATdesign$person$thetas_SE_history, "\n") #debug
   current_se <- round(as.numeric(
     CATdesign$person$thetas_SE_history[user$iter + 1L, ]
   ), 2)
+  cat(userid, ": SE of theta est. is ",current_se,"\n")
   
-  user$iter <- user$iter + 1L
   next_item_num <- mirtCAT::findNextItem(CATdesign)
-  next_item_text <- questions[next_item_num]
   
-  # save to RAM
-  save_user(userid, user)
-  # save to disc:
-  df <- list(
-    userid = userid,
-    responses = user$pat,
-    theta = theta,
-    se = current_se,
-    timestamp = Sys.time()
-  )
-  if(!dir.exists("sessions")) dir.create("sessions", showWarnings = FALSE)
-  filepath <- file.path("sessions", paste0(
-    userid, "_PHQ9", 
-    "_session.json"
-  ))
-  write_json(df, filepath, pretty = TRUE, auto_unbox = TRUE)
+  if(!is.na(next_item_num)) { #Continue:
+    user$iter <- user$iter + 1L
+    next_item_text <- questions[next_item_num]
+    # save responses to RAM
+    save_user(userid, user)
+    # list to return:
+    list(
+      userid = userid,
+      iter = user$iter,
+      pat = user$pat,
+      item_num = next_item_num,
+      item = next_item_text,
+      se_thetahat = current_se,
+      thetahat = theta,
+      stop = FALSE
+    )} 
   
-  list(
-    userid = userid,
-    iter = user$iter,
-    pat = user$pat,
-    item_num = next_item_num,
-    item = next_item_text,
-    se_thetahat = current_se,
-    thetahat = theta
-  )
+  if(is.na(next_item_num)) {# stop! & save
+    # save to disc:
+    df <- list(
+      userid = userid,
+      responses = user$pat,
+      theta = theta,
+      se = current_se,
+      timestamp = Sys.time()
+    )
+    if(!dir.exists("sessions")) dir.create("sessions", showWarnings = FALSE)
+    filepath <- file.path("sessions", paste0(
+      userid, "_", catName, 
+      "_session.json"
+    ))
+    write_json(df, filepath, pretty = TRUE, auto_unbox = TRUE)
+    list(
+      userid = userid,
+      iter = NA,
+      pat = user$pat,
+      item_num = NA,
+      item = NA,
+      se_thetahat = current_se,
+      thetahat = theta,
+      stop = TRUE
+    )} 
+  return(list) 
 } 
 
 #* @get /user-results
