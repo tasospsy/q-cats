@@ -233,32 +233,36 @@ function(req, res) {
 }
 
 #* @post /upload
-#* @parser multi
-function(req, res, file) {
+function(req, res) {
   api_key <- req$HTTP_X_API_KEY
   if (is.null(api_key) || api_key != KEY) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
   
+  # Ensure upload directory exists
   upload_dir <- "uploads"
   if (!dir.exists(upload_dir)) dir.create(upload_dir, showWarnings = FALSE)
   
-  if (is.null(file)) {
+  # Read raw body
+  raw <- req$postBodyRaw
+  
+  if (is.null(raw) || length(raw) == 0) {
     res$status <- 400
     return(list(error = "No file uploaded"))
   }
   
+  # Build filename
   file_path <- file.path(
-    upload_dir, 
+    upload_dir,
     paste0("upload_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".csv")
   )
   
-  # Correct way to access the file datapath
-  file.copy(file$datapath, file_path)
+  # Write file
+  writeBin(raw, file_path)
   
   list(
-    status = "ok", 
+    status = "ok",
     saved_as = basename(file_path)
   )
 }
