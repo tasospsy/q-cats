@@ -231,3 +231,33 @@ function(req, res) {
   )
   return(res.df)
 }
+
+#* @post /upload
+function(req, res) {
+  api_key <- req$HTTP_X_API_KEY
+  if (is.null(api_key) || api_key != KEY) {
+    res$status <- 401
+    return(list(error = "Invalid or missing API key"))
+  }
+  
+  upload_dir <- "uploads"
+  if (!dir.exists(upload_dir)) dir.create(upload_dir, showWarnings = FALSE)
+  
+  raw <- req$body
+  if (is.null(raw) || length(raw) == 0) {
+    res$status <- 400
+    return(list(error = "No file uploaded"))
+  }
+  
+  file_path <- file.path(
+    upload_dir,
+    paste0("upload_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".csv")
+  )
+  
+  writeBin(raw, file_path)
+  
+  list(
+    status = "ok",
+    saved_as = basename(file_path)
+  )
+}
