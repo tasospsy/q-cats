@@ -233,25 +233,34 @@ function(req, res) {
 }
 
 #* @post /upload
-#* @parser multipart
-function(req, res){
+function(req, res) {
   api_key <- req$HTTP_X_API_KEY
   if (is.null(api_key) || api_key != KEY) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
   
-  if (is.null(req$files$file)) {
+  upload_dir <- "uploads"
+  if (!dir.exists(upload_dir)) dir.create(upload_dir, showWarnings = FALSE)
+  
+  raw <- req$body  # <-- THIS IS ALWAYS where raw file bytes arrive in Plumber
+  
+  if (is.null(raw) || length(raw) == 0) {
     res$status <- 400
     return(list(error = "No file uploaded"))
   }
   
-  upload_dir <- "uploads"
-  if (!dir.exists(upload_dir)) dir.create(upload_dir)
+  file_path <- file.path(
+    upload_dir,
+    paste0("upload_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".csv")
+  )
   
-  out_path <- file.path(upload_dir, req$files$file$filename)
-  file.copy(req$files$file$datapath, out_path, overwrite = TRUE)
+  writeBin(raw, file_path)
   
-  list(status = "ok", saved_as = basename(out_path))
+  list(
+    status = "ok",
+    saved_as = basename(file_path)
+  )
 }
+
 
