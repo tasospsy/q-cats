@@ -243,19 +243,24 @@ function(req, res) {
   upload_dir <- "uploads"
   if (!dir.exists(upload_dir)) dir.create(upload_dir, showWarnings = FALSE)
   
-  raw <- req$body  # <-- THIS IS ALWAYS where raw file bytes arrive in Plumber
+  raw <- req$body  
   
   if (is.null(raw) || length(raw) == 0) {
     res$status <- 400
     return(list(error = "No file uploaded"))
   }
   
+  uploaded <- req$files[[1]]       # req$files$file info list
+  tmp_path <- uploaded$datapath    # plumber stores file here
+  original <- uploaded$filename
+  
   file_path <- file.path(
     upload_dir,
-    paste0("upload_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".csv")
+    paste0(Sys.time(), "_", original)
   )
   
-  writeBin(raw, file_path)
+  # move tmp file to directory
+  file.copy(tmp_path, file_path, overwrite = TRUE)
   
   list(
     status = "ok",
