@@ -245,10 +245,10 @@ function(req, res) {
   if (!dir.exists(upload_dir)) 
     dir.create(upload_dir, showWarnings = FALSE)
   
-  #upload <- read.csv(text=rawToChar(req$body[[1]]$value))
-  
-  dest <- file.path("uploads", req$body[[1]]$filename)
-  writeBin(req$body[[1]]$value, dest)  
+  for(i in 1:length(req$body)){
+    dest <- file.path("uploads", req$body[[i]]$filename)
+    writeBin(req$body[[i]]$value, dest)  
+  }
 
   list(
     status = "ok",
