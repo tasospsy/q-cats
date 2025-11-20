@@ -246,11 +246,10 @@ function(req, res) {
     dir.create(upload_dir, showWarnings = FALSE)
   
   #upload <- read.csv(text=rawToChar(req$body[[1]]$value))
-  print(str(req$body[[1]]$parsed))
   
-  #dest <- file.path("uploads", req$body[[1]]$filename)
-  #write.csv(dest, showWarnings = FALSE)
-  
+  dest <- file.path("uploads", req$body[[1]]$filename)
+  writeBin(req$body[[1]]$value, dest)  
+
   list(
     status = "ok",
     saved_as = basename(dest)
