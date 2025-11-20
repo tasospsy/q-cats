@@ -234,7 +234,6 @@ function(req, res) {
 
 #* @post /upload
 #* @parser multi
-#* @parser csv
 function(req, res) {
   
   api_key <- req$HTTP_X_API_KEY
