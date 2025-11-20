@@ -241,9 +241,10 @@ function(req, res) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
-  cat(req$body[[1]]$name, "\n", 
-      req$body[[1]]$filename, "\n",
-      req$body[[1]]$value)
+  upload <- read.csv(text=rawToChar(req$body[[1]]$value))
+  req$body[[1]]$name
+  print(upload)
+  
   # ensure upload folder exists
   #dir.create("uploads", showWarnings = FALSE)
   
