@@ -242,32 +242,23 @@ function(req, res) {
     return(list(error = "Invalid or missing API key"))
   }
   
-  # check uploaded files list from plumber
-  if (is.null(req$files) || length(req$files) == 0) {
-    res$status <- 400
-    return(list(error = "No file uploaded"))
-  }
-  
-  # get first file
-  uploaded <- req$files[[1]]    # <-- THIS is where it comes from
-  tmp_path <- uploaded$datapath
-  original_name <- uploaded$filename
-  
+  test <- read.csv(text=rawToChar(req$body$value))
+  print(test)  
   # ensure upload folder exists
-  dir.create("uploads", showWarnings = FALSE)
+  #dir.create("uploads", showWarnings = FALSE)
   
   # final destination
-  dest <- file.path(
-    "uploads",
-    paste0(format(Sys.time(), "%Y%m%d_%H%M%S_"), original_name)
-  )
+  #dest <- file.path(
+  #  "uploads",
+  #  paste0(format(Sys.time(), "%Y%m%d_%H%M%S_"), original_name)
+  #)
   
-  file.copy(tmp_path, dest, overwrite = TRUE)
+  #file.copy(tmp_path, dest, overwrite = TRUE)
   
-  list(
-    status = "ok",
-    saved_as = basename(dest)
-  )
+  #list(
+  #  status = "ok",
+  #  saved_as = basename(dest)
+  #)
 }
 
 
