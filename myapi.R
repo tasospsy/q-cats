@@ -234,6 +234,7 @@ function(req, res) {
 
 #* @post /upload
 #* @parser multi
+#* @parser csv
 function(req, res) {
   
   api_key <- req$HTTP_X_API_KEY
@@ -242,7 +243,7 @@ function(req, res) {
     return(list(error = "Invalid or missing API key"))
   }
   
-  test <- read.csv(text=rawToChar(req$body$value))
+  test <- read.csv(req$files$file)
   print(test)  
   # ensure upload folder exists
   #dir.create("uploads", showWarnings = FALSE)
