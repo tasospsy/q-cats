@@ -233,7 +233,7 @@ function(req, res) {
 }
 
 #* @post /upload
-#* @parser multipart
+#* @parser multi
 function(req, res) {
   
   api_key <- req$HTTP_X_API_KEY
