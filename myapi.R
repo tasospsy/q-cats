@@ -240,28 +240,22 @@ function(req, res) {
     return(list(error = "Invalid or missing API key"))
   }
   
-  upload_dir <- "uploads"
-  if (!dir.exists(upload_dir)) dir.create(upload_dir, showWarnings = FALSE)
-  
-  raw <- req$body  
-  
-  if (is.null(raw) || length(raw) == 0) {
+  if (is.null(req$files$file)) {
     res$status <- 400
     return(list(error = "No file uploaded"))
   }
   
-  uploaded <- req$files[[1]]       # req$files$file info list
-  tmp_path <- uploaded$datapath    # plumber stores file here
+  upload_dir <- "uploads"
+  if (!dir.exists(upload_dir)) 
+    dir.create(upload_dir, showWarnings = FALSE)
+  
+  uploaded <- req$files$file
+  tmp_path <- uploaded$datapath
   original <- uploaded$filename
   
-  file_path <- file.path(
-    upload_dir,
-    paste0(Sys.time(), "_", original)
-  )
+  file_path <- file.path(upload_dir, original)
   
-  # move tmp file to directory
   file.copy(tmp_path, file_path, overwrite = TRUE)
-  
   list(
     status = "ok",
     saved_as = basename(file_path)
