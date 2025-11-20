@@ -233,32 +233,40 @@ function(req, res) {
 }
 
 #* @post /upload
+#* @parser multipart
 function(req, res) {
+  
   api_key <- req$HTTP_X_API_KEY
   if (is.null(api_key) || api_key != KEY) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
   
-  if (is.null(req$files$file)) {
+  # check uploaded files list from plumber
+  if (is.null(req$files) || length(req$files) == 0) {
     res$status <- 400
     return(list(error = "No file uploaded"))
   }
   
-  upload_dir <- "uploads"
-  if (!dir.exists(upload_dir)) 
-    dir.create(upload_dir, showWarnings = FALSE)
-  
-  uploaded <- req$files$file
+  # get first file
+  uploaded <- req$files[[1]]    # <-- THIS is where it comes from
   tmp_path <- uploaded$datapath
-  original <- uploaded$filename
+  original_name <- uploaded$filename
   
-  file_path <- file.path(upload_dir, original)
+  # ensure upload folder exists
+  dir.create("uploads", showWarnings = FALSE)
   
-  file.copy(tmp_path, file_path, overwrite = TRUE)
+  # final destination
+  dest <- file.path(
+    "uploads",
+    paste0(format(Sys.time(), "%Y%m%d_%H%M%S_"), original_name)
+  )
+  
+  file.copy(tmp_path, dest, overwrite = TRUE)
+  
   list(
     status = "ok",
-    saved_as = basename(file_path)
+    saved_as = basename(dest)
   )
 }
 
