@@ -37,10 +37,11 @@ function(req, res) {
 library(mirt)
 library(mirtCAT)
 ## READ CAT SPECS
-link <- "https://github.com/tasospsy/q-cats/raw/refs/heads/main/calibrations/phq9-irt-cal-results.RData"
-load(url(link))
-J <- length(questions)
-catName <- "PHQ9"
+load("irt-calib-results.RData")
+df <- read.csv("items_df.csv")
+J <- nrow(df)
+
+catName <- "PHQ9" #@todo
 
 ## Global settings
 sessions <- new.env(parent = emptyenv())
@@ -90,7 +91,8 @@ function(req, res) {
     userid = userid,
     iter = user$iter,
     stop_crit = user$stop_crit,
-    next_q = questions[next_item_num],
+    next_q = df$Item[next_item_num],
+    choices = paste(as.character(df[,3:6][next_item_num,]),collapse = "|"),
     item_num = next_item_num,
     itembank = user$itembank
   )
@@ -135,7 +137,6 @@ function(req, res) {
   if(current_se > user$stop_crit) { #Continue:
     next_item_num <- mirtCAT::findNextItem(CATdesign)
     user$iter <- user$iter + 1L
-    next_item_text <- questions[next_item_num]
     # save responses to RAM
     save_user(userid, user)
     # list to return:
@@ -145,7 +146,8 @@ function(req, res) {
         iter = user$iter,
         pat = user$pat,
         item_num = next_item_num,
-        item = next_item_text,
+        item = df$Item[next_item_num],
+        choices = paste(as.character(df[,3:6][next_item_num,]),collapse = "|"),
         se_thetahat = current_se,
         thetahat = theta,
         stop = 0
@@ -154,7 +156,7 @@ function(req, res) {
   
   if(current_se <= user$stop_crit || sum(!is.na(user$pat)) == J) {# stop! & save
     # save to disc:
-    df <- list(
+    res.df <- list(
       userid = userid,
       responses = user$pat,
       theta = theta,
@@ -166,7 +168,7 @@ function(req, res) {
       userid, "_", catName, 
       "_session.json"
     ))
-    write_json(df, filepath, pretty = TRUE, auto_unbox = TRUE)
+    write_json(res.df, filepath, pretty = TRUE, auto_unbox = TRUE)
     return(
       list(
         userid = userid,
