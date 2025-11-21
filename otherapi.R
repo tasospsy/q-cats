@@ -2,6 +2,7 @@
 # HELPER FUNCTIONS API ----------------------------------------------------
 # -------------------------------------------------------------------------
 #* USER RESULTS TO JSON 
+KEY <- "test" #@todo
 #* @get /user-results
 function(req, res) {
   api_key <- req$HTTP_X_API_KEY
