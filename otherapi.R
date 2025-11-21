@@ -1,8 +1,24 @@
 # -------------------------------------------------------------------------
 # HELPER FUNCTIONS API ----------------------------------------------------
 # -------------------------------------------------------------------------
-#* USER RESULTS TO JSON 
+
 KEY <- "test" #@todo
+
+#* @filter cors
+function(req, res) {
+  res$setHeader("Access-Control-Allow-Origin", "*")
+  res$setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+  res$setHeader("Access-Control-Allow-Headers", "Content-Type, x-api-key, userid")
+  
+  if (req$REQUEST_METHOD == "OPTIONS") {
+    res$status <- 200
+    return(list())  # preflight response
+  }
+  
+  forward()
+}
+
+#* USER RESULTS TO JSON 
 #* @get /user-results
 function(req, res) {
   api_key <- req$HTTP_X_API_KEY
