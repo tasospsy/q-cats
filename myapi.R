@@ -37,8 +37,8 @@ function(req, res) {
 library(mirt)
 library(mirtCAT)
 ## READ CAT SPECS
-load("irt-calib-results.RData")
-df <- read.csv("items_df.csv")
+load("uploads/irt-calib-results.RData")
+df <- read.csv("uploads/items_df.csv")
 J <- nrow(df)
 
 catName <- "PHQ9" #@todo
