@@ -103,7 +103,7 @@ function(req, res) {
     iter = user$iter,
     stop_crit = user$stop_crit,
     next_q = df$Item[next_item_num],
-    choices = as.list(as.character(df[next_item_num, 3:6])),
+    choices = as.character(df[next_item_num, 3:6]),
     item_num = next_item_num,
     itembank = user$itembank
   )
@@ -158,7 +158,7 @@ function(req, res) {
         pat = user$pat,
         item_num = next_item_num,
         item = df$Item[next_item_num],
-        choices = as.list(as.character(df[next_item_num, 3:6])),
+        choices = as.character(df[next_item_num, 3:6]),
         se_thetahat = current_se,
         thetahat = theta,
         stop = 0
