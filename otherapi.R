@@ -100,12 +100,12 @@ function(req, res) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
-  upload_dir <- "uploads"
+  upload_dir <- paste0("uploads/", KEY)
   if (!dir.exists(upload_dir)) 
     dir.create(upload_dir, showWarnings = FALSE)
   
   for(i in 1:length(req$body)){
-    dest <- file.path("uploads", req$body[[i]]$filename)
+    dest <- file.path(upload_dir, req$body[[i]]$filename)
     writeBin(req$body[[i]]$value, dest)  
   }
   
