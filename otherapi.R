@@ -32,7 +32,21 @@ function(req, res) {
   dest <- file.path(save_dir, config.json)
   config <- jsonlite::fromJSON(req$postBody)
   
-  jsonlite::write_json(config, dest)
+  jsonlite::write_json(config, function(req, res) {
+    api_key <- req$HTTP_X_API_KEY
+    if (is.null(api_key) || api_key != KEY) {
+      res$status <- 401
+      return(list(error = "Invalid or missing API key"))
+    }
+    save_dir <- paste0("uploads/", api_key)
+    if (!dir.exists(save_dir)) 
+      dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
+    dest <- file.path(save_dir, "config.json")
+    config <- jsonlite::fromJSON(req$postBody)
+    
+    jsonlite::write_json(config, dest, pretty = TRUE, auto_unbox = TRUE)
+    list(status = "Config file saved")
+  })
   list(status = "Config file saved")
 }
 
