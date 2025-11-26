@@ -26,27 +26,13 @@ function(req, res) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
-  save_dir <- paste0("uploads/", KEY)
+  save_dir <- paste0("uploads/", api_key)
   if (!dir.exists(save_dir)) 
-    dir.create(save_dir, showWarnings = FALSE)
-  dest <- file.path(save_dir, config.json)
+    dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
+  dest <- file.path(save_dir, "config.json")
   config <- jsonlite::fromJSON(req$postBody)
   
-  jsonlite::write_json(config, function(req, res) {
-    api_key <- req$HTTP_X_API_KEY
-    if (is.null(api_key) || api_key != KEY) {
-      res$status <- 401
-      return(list(error = "Invalid or missing API key"))
-    }
-    save_dir <- paste0("uploads/", api_key)
-    if (!dir.exists(save_dir)) 
-      dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
-    dest <- file.path(save_dir, "config.json")
-    config <- jsonlite::fromJSON(req$postBody)
-    
-    jsonlite::write_json(config, dest, pretty = TRUE, auto_unbox = TRUE)
-    list(status = "Config file saved")
-  })
+  jsonlite::write_json(config, dest, pretty = TRUE, auto_unbox = TRUE) #uto_unbox :ensures single-element vectors are written as scalars (not arrays).)
   list(status = "Config file saved")
 }
 
@@ -132,7 +118,7 @@ function(req, res) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
-  upload_dir <- paste0("uploads/", KEY)
+  upload_dir <- paste0("uploads/", api_key)
   if (!dir.exists(upload_dir)) 
     dir.create(upload_dir, showWarnings = FALSE)
   
