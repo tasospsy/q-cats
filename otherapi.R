@@ -18,6 +18,14 @@ function(req, res) {
   forward()
 }
 
+#* Upload a CAT config JSON
+#* @post /cat-config
+function(req, res) {
+  config <- jsonlite::fromJSON(req$postBody)
+  jsonlite::write_json(config, "config.json", pretty = TRUE, auto_unbox = TRUE)
+  list(status = "Config file saved")
+}
+
 #* USER RESULTS TO JSON 
 #* @get /user-results
 function(req, res) {
