@@ -29,9 +29,10 @@ function(req, res) {
   save_dir <- paste0("uploads/", KEY)
   if (!dir.exists(save_dir)) 
     dir.create(save_dir, showWarnings = FALSE)
+  dest <- file.path(save_dir, config.json)
   config <- jsonlite::fromJSON(req$postBody)
   
-  jsonlite::write_json(config, paste0(save_dir,"/config.json"))
+  jsonlite::write_json(config, dest)
   list(status = "Config file saved")
 }
 
