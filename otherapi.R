@@ -48,7 +48,10 @@ function(req, res) {
 #* GET RESULTS IN CSV TABLE
 #* @get /get-data
 #* @serializer csv
-function(req, res) {
+#* @param user Optional user ID or name to filter
+#* @param from Optional start date in YYYY-MM-DD format
+#* @param to Optional end date in YYYY-MM-DD format
+function(req, res, user = NULL, from = NULL, to = NULL) {
   api_key <- req$HTTP_X_API_KEY
   if (is.null(api_key) || api_key != KEY) {
     res$status <- 401
@@ -56,13 +59,29 @@ function(req, res) {
   }
   
   files <- list.files("sessions", full.names = TRUE)
-  tmp <- list()
-  for(f in 1:length(files)) tmp[[f]] <- jsonlite::fromJSON(files[f])
+  tmp <- vector("list", length(files))
+  for (f in seq_along(files)) {
+    tmp[[f]] <- jsonlite::fromJSON(files[f])
+  }
   res.df <- as.data.frame(do.call(rbind, tmp))
-  # list-columns to comma-separated strings
+  
+  # Convert list-columns to strings
   res.df[] <- lapply(res.df, function(col) {
     if (is.list(col)) sapply(col, toString) else col
   })
+  
+  # Date filtering
+  if (!is.null(from)) {
+    res.df <- res.df[as.Date(res.df$date) >= as.Date(from), ]
+  }
+  if (!is.null(to)) {
+    res.df <- res.df[as.Date(res.df$date) <= as.Date(to), ]
+  }
+  
+  # User filtering
+  if (!is.null(user)) {
+    res.df <- res.df[res.df$user == user, ]
+  }
   
   res$setHeader(
     "Content-Disposition",
