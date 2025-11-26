@@ -21,8 +21,17 @@ function(req, res) {
 #* Upload a CAT config JSON
 #* @post /cat-config
 function(req, res) {
+  api_key <- req$HTTP_X_API_KEY
+  if (is.null(api_key) || api_key != KEY) {
+    res$status <- 401
+    return(list(error = "Invalid or missing API key"))
+  }
+  save_dir <- paste0("uploads/", KEY)
+  if (!dir.exists(save_dir)) 
+    dir.create(save_dir, showWarnings = FALSE)
   config <- jsonlite::fromJSON(req$postBody)
-  jsonlite::write_json(config, "config.json", pretty = TRUE, auto_unbox = TRUE)
+  
+  jsonlite::write_json(config, paste0(save_dir,"/config.json"))
   list(status = "Config file saved")
 }
 
