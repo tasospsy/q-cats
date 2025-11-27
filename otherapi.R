@@ -18,24 +18,6 @@ function(req, res) {
   forward()
 }
 
-#* Upload a CAT config JSON
-#* @post /cat-config
-function(req, res) {
-  api_key <- req$HTTP_X_API_KEY
-  if (is.null(api_key) || api_key != KEY) {
-    res$status <- 401
-    return(list(error = "Invalid or missing API key"))
-  }
-  save_dir <- paste0("uploads/", api_key)
-  if (!dir.exists(save_dir)) 
-    dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
-  dest <- file.path(save_dir, "config.json")
-  config <- jsonlite::fromJSON(req$postBody)
-  
-  jsonlite::write_json(config, dest, pretty = TRUE, auto_unbox = TRUE) #uto_unbox :ensures single-element vectors are written as scalars (not arrays).)
-  list(status = "Config file saved")
-}
-
 #* USER RESULTS TO JSON 
 #* @get /user-results
 function(req, res) {
@@ -132,3 +114,22 @@ function(req, res) {
     saved_as = basename(dest)
   )
 }
+
+#* Upload a CAT config JSON
+#* @post /cat-config
+function(req, res) {
+  api_key <- req$HTTP_X_API_KEY
+  if (is.null(api_key) || api_key != KEY) {
+    res$status <- 401
+    return(list(error = "Invalid or missing API key"))
+  }
+  save_dir <- paste0("uploads/", api_key)
+  if (!dir.exists(save_dir)) 
+    dir.create(save_dir, showWarnings = FALSE)
+  dest <- file.path(save_dir, "config.json")
+  config <- jsonlite::fromJSON(req$postBody)
+  print(config)
+  jsonlite::write_json(config, dest, pretty = TRUE, auto_unbox = TRUE) #uto_unbox :ensures single-element vectors are written as scalars (not arrays).)
+  list(status = "ok")
+}
+
