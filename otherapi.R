@@ -128,7 +128,7 @@ function(req, res) {
     dir.create(save_dir, showWarnings = FALSE)
   dest <- file.path(save_dir, "config.json")
   config <- jsonlite::fromJSON(req$postBody)
-  print(config,"\n"); print(dest)
+  str(config); cat(dest)
   jsonlite::write_json(config, dest, pretty = TRUE, auto_unbox = TRUE) #uto_unbox :ensures single-element vectors are written as scalars (not arrays).)
   list(status = "ok")
 }
