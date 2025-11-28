@@ -124,14 +124,40 @@ function(req, res) {
     return(list(error = "Invalid or missing API key"))
   }
   save_dir <- paste0("uploads/", api_key)
-  if (!dir.exists(save_dir)) 
-    dir.create(save_dir, showWarnings = FALSE)
-  dest <- file.path(save_dir, "config.json")
-  config <- jsonlite::fromJSON(req$postBody)
-  class(config);str(config); cat(dest) #debug
-  jsonlite::write_json(config, dest, pretty = TRUE, auto_unbox = TRUE) #uto_unbox :ensures single-element vectors are written as scalars (not arrays).)
+  if (dir.exists(save_dir)) {
+    # if exists create and write the config.csv
+    dest <- file.path(save_dir, "config.json")
+    config <- jsonlite::fromJSON(req$postBody)
+    str(config); cat(dest,"\n") #debug
+  } else {
+    res$status <- 401
+    return(list(error = "Directory not found. Perhaps itembank.csv is also missing."))
+  }
   ## --- 
   ## Model cat
+  modeltype <- "2PL" #@todo checklist config$irtmodel
+  csvdest <- file.path(save_dir, "itembank.csv")
+  df <- read.csv(csvdest)
+  #@todo str(df) checks!
+  if(0==0) { #@todo if Raw Data NOT uploaded..
+    # use item parameters to construct the mirt object
+    if(1==1) df$d <- -(df$b*df$a) #@todo check button b -> d
+    # Create 
+    tmp <- cbind('a1' = df$a, 'd' = df$d) #following mirt:: guide
+    rownames(tmp) <- df$Name
+    mod <- mirtCAT::generate.mirt_object(parameters = tmp, modeltype)
+    print(coef(mod, simplify = TRUE)$items)
+    print(M2(mod))
+  }
+  if(0==1) { #@todo if Raw Data ...
+    # fit a model
+  }
+  config$fit <- M2(mod)
+  # write config.json with model fit
+  jsonlite::write_json(config, dest, pretty = TRUE, auto_unbox = TRUE) #uto_unbox :ensures single-element vectors are written as scalars (not arrays).)
+  # write mirt object to .RDS file
+  RDSdest <- file.path(save_dir,"mirt_object.RDS")
+  saveRDS(mod, RDSdest)
   
   list(status = "ok")
 }
