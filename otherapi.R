@@ -146,13 +146,13 @@ function(req, res) {
     tmp <- cbind('a1' = df$a, 'd' = df$d) #following mirt:: guide
     rownames(tmp) <- df$Name
     mod <- mirtCAT::generate.mirt_object(parameters = tmp, modeltype)
-    print(coef(mod, simplify = TRUE)$items)
-    print(M2(mod))
+    #print(coef(mod, simplify = TRUE)$items)
+    #print(M2(mod))
   }
   if(0==1) { #@todo if Raw Data ...
     # fit a model
   }
-  #config$fit <- as.list(M2(mod))
+  config$fit <- as.list(M2(mod))
   # write config.json with model fit
   jsonlite::write_json(config, dest, pretty = TRUE, auto_unbox = TRUE) #uto_unbox :ensures single-element vectors are written as scalars (not arrays).)
   # write mirt object to .RDS file
