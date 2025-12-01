@@ -49,16 +49,21 @@ function(req, res) {
 #* @get /get-data
 #* @serializer csv
 #* @param user Optional user ID or name to filter
+#* @param catName
 #* @param from Optional start date in YYYY-MM-DD format
 #* @param to Optional end date in YYYY-MM-DD format
-function(req, res, user = NULL, from = NULL, to = NULL) {
+function(req, res, catName = NULL, user = NULL, from = NULL, to = NULL) {
   api_key <- req$HTTP_X_API_KEY
   if (is.null(api_key) || api_key != KEY) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
-  
   files <- list.files("sessions", full.names = TRUE)
+  
+  # cat name filtering
+  if (!is.null(from)) {
+    files <- list.files(files, full.names = TRUE)
+  }
   tmp <- vector("list", length(files))
   for (f in seq_along(files)) {
     tmp[[f]] <- jsonlite::fromJSON(files[f])
@@ -77,7 +82,6 @@ function(req, res, user = NULL, from = NULL, to = NULL) {
   if (!is.null(to)) {
     res.df <- res.df[as.Date(res.df$date) <= as.Date(to), ]
   }
-  
   # User filtering
   if (!is.null(user)) {
     res.df <- res.df[res.df$user == user, ]
