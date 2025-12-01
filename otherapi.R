@@ -61,8 +61,8 @@ function(req, res, catName = NULL, user = NULL, from = NULL, to = NULL) {
   files <- list.files("sessions", full.names = TRUE)
   
   # cat name filtering
-  if (!is.null(from)) {
-    files <- list.files(files, full.names = TRUE)
+  if (!is.null(catName)) {
+    files <- files[grepl(catName, basename(files))]
   }
   tmp <- vector("list", length(files))
   for (f in seq_along(files)) {
