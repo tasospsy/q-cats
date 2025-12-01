@@ -164,7 +164,6 @@ function(req, res) {
     CATdesign$person$thetas_SE_history[user$iter + 1L, ]
   ), 2)
   cat(catName, " - ", userid, ": SE is ",current_se,"\n")
-  cat(user$J)
   terminate <- FALSE
   if(user$config$catType == "variable"){
     if(current_se <= user$stop_crit || sum(!is.na(user$pat)) == user$J) {
