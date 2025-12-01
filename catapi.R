@@ -101,7 +101,7 @@ function(req, res) {
     stop_crit = stop_crit,
     catdesign = NULL,
     config = config,
-    itembank = df,
+    df = df,
     J = J
   )
   
@@ -113,7 +113,6 @@ function(req, res) {
   next_item_num <- mirtCAT::findNextItem(CATdesign)
   
   user$catdesign <- CATdesign
-  user$itembank[next_item_num] <- FALSE
   user$iter <- user$iter + 1L
   
   save_user(catName, userid, user)
@@ -122,10 +121,9 @@ function(req, res) {
     userid = userid,
     iter = user$iter,
     #stop_crit = user$stop_crit,
-    next_q = user$itembank$Item[next_item_num],
-    choices = as.character(user$itembank[next_item_num, 3:6]),
+    next_q = df$Item[next_item_num],
+    choices = as.character(df[next_item_num, 3:6]),
     item_num = next_item_num
-    #itembank = user$itembank
   )
 }
 
@@ -148,7 +146,7 @@ function(req, res) {
     res$status <- 404
     return(list(error = "Session not found; call /init first"))
   }
-  
+  df <- user$df
   body <- jsonlite::fromJSON(req$postBody)
   
   resp <- as.numeric(body$q_resp) # a
@@ -218,8 +216,8 @@ function(req, res) {
           iter = user$iter,
           pat = user$pat,
           item_num = next_item_num,
-          item = user$itembank$Item[next_item_num],
-          choices = as.character(user$itembank[next_item_num, 3:6]), #@todo
+          item = df$Item[next_item_num],
+          choices = as.character(df[next_item_num, 3:6]), #@todo
           se_thetahat = current_se,
           thetahat = theta,
           stop = 0
