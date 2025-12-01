@@ -98,10 +98,11 @@ function(req, res) {
   user <- list(
     iter = 0L,
     pat = rep(NA, J),
-    #itembank = rep(TRUE, J),
     stop_crit = stop_crit,
     catdesign = NULL,
-    config = config
+    config = config,
+    itembank = df,
+    J = J
   )
   
   # Algorithm setup
@@ -121,8 +122,8 @@ function(req, res) {
     userid = userid,
     iter = user$iter,
     #stop_crit = user$stop_crit,
-    next_q = df$Item[next_item_num],
-    choices = as.character(df[next_item_num, 3:6]),
+    next_q = user$itembank$Item[next_item_num],
+    choices = as.character(user$itembank[next_item_num, 3:6]),
     item_num = next_item_num
     #itembank = user$itembank
   )
@@ -157,8 +158,6 @@ function(req, res) {
   CATdesign <- mirtCAT::updateDesign(user$catdesign,
                                      new_item = item_num, # b
                                      new_response = resp) # a
- # resp in qualtrics??????????
-  
   user$catdesign <- CATdesign
   user$pat <- CATdesign$person$responses
   
@@ -170,7 +169,7 @@ function(req, res) {
   
   terminate <- FALSE
   if(user$config$catType == "variable"){
-    if(current_se <= user$stop_crit || sum(!is.na(user$pat)) == J) {
+    if(current_se <= user$stop_crit || sum(!is.na(user$pat)) == user$J) {
       terminate <- TRUE
     }}
   if(user$config$catType == "fixed"){
@@ -217,8 +216,8 @@ function(req, res) {
           iter = user$iter,
           pat = user$pat,
           item_num = next_item_num,
-          item = df$Item[next_item_num],
-          choices = as.character(df[next_item_num, 3:6]), #@todo
+          item = user$itembank$Item[next_item_num],
+          choices = as.character(user$itembank[next_item_num, 3:6]), #@todo
           se_thetahat = current_se,
           thetahat = theta,
           stop = 0
