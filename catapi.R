@@ -204,7 +204,9 @@ function(req, res) {
         thetahat = theta,
         stop = 1 #@todo I have two dummy vars for the same thing, stop and terminate
       )
-    )} else { #terminate = FALSE
+    )
+    rm(user)
+    } else { #terminate = FALSE
       next_item_num <- mirtCAT::findNextItem(CATdesign)
       user$iter <- user$iter + 1L
       # save responses to RAM
