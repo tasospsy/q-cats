@@ -38,8 +38,8 @@ sessions <- new.env(parent = emptyenv())
 # ------------------------------------------------------------
 #  HELPER FUNS
 # ------------------------------------------------------------
-get_user <- function(catName, userid) sessions[[catName]][[userid]]
-save_user <- function(catname, userid, obj) sessions[[catName]][[userid]] <- obj
+get_user <- function(catname, userid) sessions[[catname]][[userid]]
+save_user <- function(catname, userid, obj) sessions[[catname]][[userid]] <- obj
 
 ## API SETTINGS
 
@@ -114,7 +114,7 @@ function(req, res) {
   user$itembank[next_item_num] <- FALSE
   user$iter <- user$iter + 1L
   
-  save_user(catName, userid, user)
+  save_user(config$catName, userid, user)
   
   list(
     userid = userid,
@@ -204,7 +204,7 @@ function(req, res) {
       next_item_num <- mirtCAT::findNextItem(CATdesign)
       user$iter <- user$iter + 1L
       # save responses to RAM
-      save_user(userid, user)
+      save_user(save_user, userid, user)
       # list to return:
       return(
         list(
