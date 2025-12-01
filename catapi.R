@@ -100,7 +100,8 @@ function(req, res) {
     pat = rep(NA, J),
     #itembank = rep(TRUE, J),
     stop_crit = stop_crit,
-    catdesign = NULL
+    catdesign = NULL,
+    config = config
   )
   
   # Algorithm setup
@@ -114,7 +115,7 @@ function(req, res) {
   user$itembank[next_item_num] <- FALSE
   user$iter <- user$iter + 1L
   
-  save_user(config$catName, userid, user)
+  save_user(catName, userid, user)
   
   list(
     userid = userid,
