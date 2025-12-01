@@ -166,14 +166,14 @@ function(req, res) {
   current_se <- round(as.numeric(
     CATdesign$person$thetas_SE_history[user$iter + 1L, ]
   ), 2)
-  cat(userid, ": SE of theta est. is ",current_se,"\n")
+  cat(catName, " - ", userid, ": SE is ",current_se,"\n")
   
   terminate <- FALSE
-  if(config$catType == "variable"){
+  if(user$config$catType == "variable"){
     if(current_se <= user$stop_crit || sum(!is.na(user$pat)) == J) {
       terminate <- TRUE
     }}
-  if(config$catType == "fixed"){
+  if(user$config$catType == "fixed"){
     if(sum(!is.na(user$pat)) == user$stop_crit){
       terminate <- TRUE
     }
