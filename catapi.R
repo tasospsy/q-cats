@@ -51,7 +51,8 @@ function(req, res) {
     res$status <- 400
     return(list(error = "Missing userid header"))
   }
-  catName <- req$HTTP_CATNAME
+  catName <- as.character(req$HTTP_CATNAME)
+  print(catName); class(catName)
   if (is.null(catName) || catName == "") {
     res$status <- 400
     return(list(error = "Missing catName header"))
@@ -137,6 +138,7 @@ function(req, res) {
     return(list(error = "Missing userid header"))
   }
   ## catName?
+  catName <- as.character(req$HTTP_CATNAME)
   user <- get_user(catName, userid)
   if (is.null(user)) {
     res$status <- 404
@@ -204,7 +206,7 @@ function(req, res) {
       next_item_num <- mirtCAT::findNextItem(CATdesign)
       user$iter <- user$iter + 1L
       # save responses to RAM
-      save_user(save_user, userid, user)
+      save_user(catName, userid, user)
       # list to return:
       return(
         list(
