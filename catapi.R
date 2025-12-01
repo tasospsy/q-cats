@@ -52,7 +52,6 @@ function(req, res) {
     return(list(error = "Missing userid header"))
   }
   catName <- as.character(req$HTTP_CATNAME)
-  print(catName); class(catName)
   if (is.null(catName) || catName == "") {
     res$status <- 400
     return(list(error = "Missing catName header"))
@@ -137,8 +136,11 @@ function(req, res) {
     res$status <- 400
     return(list(error = "Missing userid header"))
   }
-  ## catName?
   catName <- as.character(req$HTTP_CATNAME)
+  if (is.null(catName) || catName == "") {
+    res$status <- 400
+    return(list(error = "Missing catName header"))
+  }
   user <- get_user(catName, userid)
   if (is.null(user)) {
     res$status <- 404
