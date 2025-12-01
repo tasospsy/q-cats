@@ -60,7 +60,7 @@ function(req, res) {
   dir <- paste0("uploads/", key)
   configdest <- file.path(dir, "config.json")
   if(file.exists(configdest)){
-    config <- jsonlite::fromJSON(dest) 
+    config <- jsonlite::fromJSON(configdest) 
     cat("config is loaded\n")
   } else {
     res$status <- 400
