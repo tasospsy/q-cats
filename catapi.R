@@ -148,14 +148,16 @@ function(req, res) {
   }
   df <- user$df
   body <- jsonlite::fromJSON(req$postBody)
+  item_num <- as.numeric(body$item_num) # a
   
-  resp <- as.numeric(body$q_resp) # a
-  item_num <- as.numeric(body$item_num) # b
+  resp_position <- as.numeric(body$q_resp) # 1, 2, 3, ..., max(categrory)
+  chr_string <- df$Correct[item_num]
+  resp <- unlist(strsplit(chr_string, split = ""))[resp_position] # takes the 'resp_position' element of the splitted 'chr_string' 
   ## pass the response to the algorithm
   # update CAT:
   CATdesign <- mirtCAT::updateDesign(user$catdesign,
-                                     new_item = item_num, # b
-                                     new_response = resp) # a
+                                     new_item = item_num, # at this item..
+                                     new_response = resp) # ..this answer
   user$catdesign <- CATdesign
   user$pat <- CATdesign$person$responses
   
