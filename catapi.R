@@ -151,7 +151,7 @@ function(req, res) {
   item_num <- as.numeric(body$item_num) # a
   
   resp_position <- as.numeric(body$q_resp) # 1, 2, 3, ..., max(categrory)
-  chr_string <- df$Correct[item_num]
+  chr_string <- as.character(df$Correct[item_num])
   resp <- unlist(strsplit(chr_string, split = ""))[resp_position] # takes the 'resp_position' element of the splitted 'chr_string' 
   ## pass the response to the algorithm
   # update CAT:
