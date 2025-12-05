@@ -206,8 +206,8 @@ function(req, res){
     exampledf$u <- 1 #1
     return(exampledf)
   }
-  return(make_itembank_df(J = payload$J,
-                          categories = payload$categories,
-                          factors = payload$factors,
-                          choices = payload$choices))
+  return(make_itembank_df(J =          as.numeric(payload$J),
+                          categories = as.numeric(payload$categories),
+                          factors =    as.numeric(payload$factors),
+                          choices =    as.numeric(payload$choices)))
 }
