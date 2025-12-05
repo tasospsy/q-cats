@@ -189,7 +189,7 @@ function(req, res){
     # polytmous
     if (categories>2) exampledf$Solution <- paste(0:(categories-1), collapse = "") #or choices
     
-    if (categories==2) exampledf$Solution <- "1000"
+    if (categories==2) exampledf$Solution <- paste(c("1", rep("0", choices-1)), collapse = "")
     
     for (f in 1:factors) {
       exampledf[[paste0("F", f)]] <- 0
