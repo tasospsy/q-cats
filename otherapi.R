@@ -222,6 +222,6 @@ function(req, res){
     res$status <- 401
     return(list(error = "Unauthorized: invalid API key"))
   }
-  payload <- fromJSON(req$postBody, simplifyVector = FALSE)
+  payload <- jsonlite::fromJSON(req$postBody, simplifyVector = FALSE)
   return(payload)
 }
