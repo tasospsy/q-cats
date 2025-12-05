@@ -168,7 +168,7 @@ function(req, res) {
 
 
 #* @post /df-json
-#* @serializer json
+#* @serializer csv
 function(req, res){
   api_key <- req$HTTP_X_API_KEY
   if (is.null(api_key) || api_key != KEY) {
@@ -178,6 +178,7 @@ function(req, res){
   payload <- jsonlite::fromJSON(req$postBody, simplifyVector = FALSE)
   
   #-- run the function 
+  ## Check raw code offline !!
   make_itembank_df <- function(J,categories,factors,choices){
     exampledf <- data.frame(
       ItemLabel = paste0("X", 1:J),
@@ -189,25 +190,29 @@ function(req, res){
     # polytmous
     if (categories>2) exampledf$Solution <- paste(0:(categories-1), collapse = "") #or choices
     
-    if (categories==2) exampledf$Solution <- paste(c("1", rep("0", choices-1)), collapse = "")
-    
-    for (f in 1:factors) {
-      exampledf[[paste0("F", f)]] <- 0
+    if (categories==2) {
+      exampledf$Solution <- paste(c("1", rep("0", choices-1)), collapse = "")
+      exampledf$g <- 0 #0
+      exampledf$u <- 1 #1
     }
-    exampledf$F1 <- 1
+    
+    #for (f in 1:factors) {
+    #  exampledf[[paste0("F", f)]] <- 0
+    #}
+    #exampledf$F1 <- 1
     for (f in 1:factors) {
       exampledf[[paste0("a", f)]] <- 0
     }
     exampledf$a1 <- 1
     for (c in 1:(categories-1)) {
-      exampledf[[paste0("b", c)]] <- 0
+      exampledf[[paste0("d", c)]] <- 0
     }
-    exampledf$g <- 0 #0
-    exampledf$u <- 1 #1
     return(exampledf)
-  }
-  return(make_itembank_df(J =          as.numeric(payload$J),
-                          categories = as.numeric(payload$categories),
-                          factors =    as.numeric(payload$factors),
-                          choices =    as.numeric(payload$choices)))
+  } # end of function
+  
+  res <- make_itembank_df(J =   as.numeric(payload$J),
+                   categories = as.numeric(payload$categories),
+                   factors =    as.numeric(payload$factors),
+                   choices =    as.numeric(payload$choices))
+  return(res)
 }
