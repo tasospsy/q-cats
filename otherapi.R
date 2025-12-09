@@ -145,8 +145,8 @@ function(req, res) {
   #@todo str(df) checks!
   if(0==0) { #@todo if Raw Data NOT uploaded..
     # use item parameters to construct the mirt object
+    nms <- names(df)
     if(config$reparam == "yes") {
-      nms <- names(df)
       A <- unlist(ifelse(ncol(df[nms[grepl("^a", nms)]])>1, rowSums(df[nms[grepl("^a", nms)]]), df[nms[grepl("^a", nms)]]))
       df[nms[grepl("^d", nms)]] <- apply(df[nms[grepl("^d", nms)]], 2, function(di) -(di*A)) #@todo check button b -> d
     }
