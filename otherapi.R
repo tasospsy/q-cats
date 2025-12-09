@@ -139,24 +139,25 @@ function(req, res) {
   }
   ## --- 
   ## Model cat
-  modeltype <- "2PL" #@todo checklist config$irtmodel
+  modeltype <- config$model 
   csvdest <- file.path(save_dir, "itembank.csv")
   df <- read.csv(csvdest)
   #@todo str(df) checks!
   if(0==0) { #@todo if Raw Data NOT uploaded..
     # use item parameters to construct the mirt object
-    if(1==1) df$d <- -(df$b*df$a) #@todo check button b -> d
-    # Create 
-    tmp <- cbind('a1' = df$a, 'd' = df$d) #following mirt:: guide
-    rownames(tmp) <- df$Name
+    if(config$reparam == "yes") {
+      nms <- names(df)
+      A <- unlist(ifelse(ncol(df[nms[grepl("^a", nms)]])>1, rowSums(df[nms[grepl("^a", nms)]]), df[nms[grepl("^a", nms)]]))
+      df[nms[grepl("^d", nms)]] <- apply(df[nms[grepl("^d", nms)]], 2, function(di) -(di*A)) #@todo check button b -> d
+    }
+    tmp <- df[nms[grepl("^(d|a)", nms)]]
+    rownames(tmp) <- df$ItemLabel
     mod <- mirtCAT::generate.mirt_object(parameters = tmp, modeltype)
-    #print(coef(mod, simplify = TRUE)$items)
-    #print(M2(mod))
   }
   if(0==1) { #@todo if Raw Data ...
     # fit a model
   }
-  config$fit <- as.list(mirt::M2(mod))
+  #config$fit <- as.list(mirt::M2(mod))
   # write config.json with model fit
   jsonlite::write_json(config, dest, pretty = TRUE, auto_unbox = TRUE) #uto_unbox :ensures single-element vectors are written as scalars (not arrays).)
   # write mirt object to .RDS file
