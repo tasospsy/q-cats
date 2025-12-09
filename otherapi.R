@@ -178,41 +178,29 @@ function(req, res){
   payload <- jsonlite::fromJSON(req$postBody, simplifyVector = FALSE)
   
   #-- run the function 
-  ## Check raw code offline !!
-  make_itembank_df <- function(J,categories,factors,choices){
+  make_itembank_df <- function(J,itemType,factors,responseOptions){
+    if(itemType == "Dichotomous Items") categories <- 2
+    if(itemType == "Polytomous Items") categories <- responseOptions
     exampledf <- data.frame(
       ItemLabel = paste0("X", 1:J),
       Item = paste0("Text for Item ", 1:J)
     )
-    for (c in 1:choices) {
-      exampledf[[paste0("Choice", c)]] <- paste0("Answer", c)
+    for (c in 1:responseOptions) {
+      exampledf[[paste0("Choice", c)]] <- paste0("Option", c)
     }
-    # polytmous
-    if (categories>2) exampledf$Solution <- paste(0:(categories-1), collapse = "") #or choices
-    
+    if (categories>2) exampledf$Scores <- paste(0:(categories-1), collapse = "") 
     if (categories==2) {
-      exampledf$Solution <- paste(c("1", rep("0", choices-1)), collapse = "")
-      exampledf$g <- 0 #0
-      exampledf$u <- 1 #1
+      exampledf$Scores <- paste(c("1", rep("0", responseOptions-1)), collapse = "")
     }
-    
-    #for (f in 1:factors) {
-    #  exampledf[[paste0("F", f)]] <- 0
-    #}
-    #exampledf$F1 <- 1
-    for (f in 1:factors) {
-      exampledf[[paste0("a", f)]] <- 0
-    }
-    exampledf$a1 <- 1
-    for (c in 1:(categories-1)) {
-      exampledf[[paste0("d", c)]] <- 0
-    }
+    for (f in 1:factors) exampledf[[paste0("a", f)]] <- NA
+    for (c in 1:(categories-1)) exampledf[[paste0("d", c)]] <- NA
+    if (categories==2) names(exampledf)[names(exampledf) == "d1"] <- "d"
     return(exampledf)
   } # end of function
   
   res <- make_itembank_df(J =   as.numeric(payload$J),
-                   categories = as.numeric(payload$categories),
-                   factors =    as.numeric(payload$factors),
-                   choices =    as.numeric(payload$choices))
+                          itemType = payload$itemType,
+                          factors =    as.numeric(payload$factors),
+                          responseOptions =    as.numeric(payload$responseOptions))
   return(res)
 }
