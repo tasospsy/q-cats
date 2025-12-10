@@ -55,7 +55,7 @@ function(req, res) {
     return(list(error = "Missing catName header"))
   }
   ## -- read config if exists
-  dir <- paste0("~",key)
+  dir <- paste0("~/",key,"/uploads")
   configdest <- file.path(dir, "config.json")
   if(file.exists(configdest)){
     config <- jsonlite::fromJSON(configdest) 
