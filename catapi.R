@@ -129,6 +129,7 @@ function(req, res) {
 
 #* @post /cat
 function(req, res) {
+  key <- req$HTTP_X_API_KEY
   userid <- req$HTTP_USERID
   if (is.null(userid) || userid == "") {
     res$status <- 400
@@ -213,7 +214,7 @@ function(req, res) {
           pat = user$pat,
           item_num = next_item_num,
           item = df$Item[next_item_num],
-          choices = as.character(df[next_item_num, 3:6]), #@todo
+          choices = as.character(df[next_item_num, names(df)[grepl("Choice", names(df))]]),
           se_thetahat = current_se,
           thetahat = theta,
           stop = 0
