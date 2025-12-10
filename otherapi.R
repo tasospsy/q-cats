@@ -18,6 +18,26 @@ function(req, res) {
   forward()
 }
 
+#*  Generate Personal Key
+#*  @get /personal-key
+function(req, res){
+  pool <- list(LETTERS,
+               letters)
+  KEY <- paste(replicate(n = 5, paste(sapply(pool,function(x) sample(x,1,replace = TRUE)),
+                                      collapse = ""), 
+                         simplify = FALSE), 
+               collapse = "")
+  
+  new_dir <- paste0("~/", KEY) # create KEY-dir
+  dir.create(new_dir, showWarnings = FALSE)
+  
+  txt_file_path <- file.path("~", "genKeys.txt") # write the KEy to main txt
+  dest <- file(txt_file_path, "ab")
+  writeBin(charToRaw(paste0(KEY, "\n")), dest)
+  close(dest)
+  return(KEY)
+}
+
 #* USER RESULTS TO JSON 
 #* @get /user-results
 function(req, res) {
