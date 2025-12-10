@@ -192,12 +192,12 @@ function(req, res) {
 #* @post /df-json
 #* @serializer csv
 function(req, res){
-  api_key <- req$HTTP_X_API_KEY
-  known_keys <-trimws(readLines("~/genKeys.txt"))
-  if (is.null(api_key) || !api_key %in% known_keys) {
-    res$status <- 401
-    return(list(error = "Unauthorized: invalid API key"))
-  }
+  #api_key <- req$HTTP_X_API_KEY
+  #known_keys <-trimws(readLines("~/genKeys.txt"))
+  #if (is.null(api_key) || !api_key %in% known_keys) {
+  #  res$status <- 401
+  #  return(list(error = "Unauthorized: invalid API key"))
+  #}
   payload <- jsonlite::fromJSON(req$postBody, simplifyVector = FALSE)
   
   #-- run the function 
