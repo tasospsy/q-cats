@@ -3,10 +3,7 @@ library(plumber)
 library(jsonlite)
 library(mirt)
 library(mirtCAT)
-# @todo read the api keys list and alter th efollowing to check 
-# if the key is inside th elist
-# for now:
-KEY <- "test"
+
 # SETTINGS  ---------------------------------------------------------------
 #* @filter cors
 function(req, res) {
@@ -24,8 +21,9 @@ function(req, res) {
 
 #* @filter check_api_key
 function(req, res) {
-  token <- req$HTTP_X_API_KEY
-  if (is.null(token) || nchar(token) == 0 || token != KEY) {
+  api_key <- req$HTTP_X_API_KEY
+  known_keys <- readLines("~/genKeys.txt")
+  if (is.null(api_key) || !api_key %in% known_keys) {
     res$status <- 401
     return(list(error = "Missing or invalid key"))
   }
@@ -57,7 +55,7 @@ function(req, res) {
     return(list(error = "Missing catName header"))
   }
   ## -- read config if exists
-  dir <- paste0("uploads/", key)
+  dir <- paste0("~",key)
   configdest <- file.path(dir, "config.json")
   if(file.exists(configdest)){
     config <- jsonlite::fromJSON(configdest) 
@@ -186,11 +184,8 @@ function(req, res) {
       se = current_se,
       timestamp = Sys.time()
     )
-    if(!dir.exists("sessions")) dir.create("sessions", showWarnings = FALSE)
-    filepath <- file.path("sessions", paste0(
-      userid, "_", catName, 
-      "_session.json"
-    ))
+    if(!dir.exists(file.path(key, "sessions"))) dir.create(file.path(key, "sessions"), showWarnings = FALSE)
+    filepath <- file.path(key, "sessions", paste0(userid, "_", catName, "_session.json"))
     write_json(user.res.df, filepath, pretty = TRUE, auto_unbox = TRUE)
     return(
       list(
