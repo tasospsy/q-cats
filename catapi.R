@@ -120,7 +120,7 @@ function(req, res) {
     iter = user$iter,
     #stop_crit = user$stop_crit,
     next_q = df$Item[next_item_num],
-    choices = as.character(df[next_item_num, 3:6]),
+    choices = as.character(df[next_item_num, names(df)[grepl("Choice", names(df))]]),
     item_num = next_item_num
   )
 }
@@ -149,7 +149,7 @@ function(req, res) {
   item_num <- as.numeric(body$item_num) # a
   
   resp_position <- as.numeric(body$q_resp) # 1, 2, 3, ..., max(categrory)
-  chr_string <- as.character(df$Correct[item_num])
+  chr_string <- as.character(df$Scores[item_num])
   resp <- unlist(strsplit(chr_string, split = ""))[resp_position] # takes the 'resp_position' element of the splitted 'chr_string' 
   ## pass the response to the algorithm
   # update CAT:
@@ -163,7 +163,7 @@ function(req, res) {
   current_se <- round(as.numeric(
     CATdesign$person$thetas_SE_history[user$iter + 1L, ]
   ), 2)
-  cat(catName, " - ", userid, ": SE is ",current_se,"\n")
+  cat(catName, " - ", userid, ": SE is ",current_se,"@ iter: ",user$iter,"\n")
   terminate <- FALSE
   if(user$config$catType == "variable"){
     if(current_se <= user$stop_crit || sum(!is.na(user$pat)) == user$J) {
