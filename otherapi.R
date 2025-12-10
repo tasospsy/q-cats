@@ -114,18 +114,17 @@ function(req, res, catName = NULL, user = NULL, from = NULL, to = NULL) {
   return(res.df)
 }
 
-#* UPLOAD FILES FROM GITHUB PAGE
 #* @post /upload
 #* @parser multi
 function(req, res) {
   
   api_key <- req$HTTP_X_API_KEY
-  known_keys <-trimws(readLines("~/genKeys.txt"))
+  known_keys <- trimws(readLines("~/genKeys.txt"))
   if (is.null(api_key) || !api_key %in% known_keys) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
-  upload_dir <- paste0("uploads/", api_key)
+  upload_dir <- paste0(api_key,"/uploads")
   if (!dir.exists(upload_dir)) 
     dir.create(upload_dir, showWarnings = FALSE)
   
@@ -149,7 +148,7 @@ function(req, res) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
-  save_dir <- paste0("uploads/", api_key)
+  save_dir <- paste0(api_key,"/uploads")
   if (dir.exists(save_dir)) {
     # if exists create and write the config.csv
     dest <- file.path(save_dir, "config.json")
