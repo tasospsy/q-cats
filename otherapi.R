@@ -40,7 +40,7 @@ function(req, res){
 #* @get /user-results
 function(req, res) {
   api_key <- req$HTTP_X_API_KEY
-  known_keys <- readLines("~/genKeys.txt")
+  known_keys <-trimws(readLines("~/genKeys.txt"))
   if (is.null(api_key) || !api_key %in% known_keys) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
@@ -73,7 +73,7 @@ function(req, res) {
 #* @param to Optional end date in YYYY-MM-DD format
 function(req, res, catName = NULL, user = NULL, from = NULL, to = NULL) {
   api_key <- req$HTTP_X_API_KEY
-  known_keys <- readLines("~/genKeys.txt")
+  known_keys <-trimws(readLines("~/genKeys.txt"))
   if (is.null(api_key) || !api_key %in% known_keys) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
@@ -120,7 +120,7 @@ function(req, res, catName = NULL, user = NULL, from = NULL, to = NULL) {
 function(req, res) {
   
   api_key <- req$HTTP_X_API_KEY
-  known_keys <- readLines("~/genKeys.txt")
+  known_keys <-trimws(readLines("~/genKeys.txt"))
   if (is.null(api_key) || !api_key %in% known_keys) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
@@ -144,7 +144,7 @@ function(req, res) {
 #* @post /cat-config
 function(req, res) {
   api_key <- req$HTTP_X_API_KEY
-  known_keys <- readLines("~/genKeys.txt")
+  known_keys <-trimws(readLines("~/genKeys.txt"))
   if (is.null(api_key) || !api_key %in% known_keys) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
@@ -194,7 +194,7 @@ function(req, res) {
 #* @serializer csv
 function(req, res){
   api_key <- req$HTTP_X_API_KEY
-  known_keys <- readLines("~/genKeys.txt")
+  known_keys <-trimws(readLines("~/genKeys.txt"))
   if (is.null(api_key) || !api_key %in% known_keys) {
     res$status <- 401
     return(list(error = "Unauthorized: invalid API key"))
