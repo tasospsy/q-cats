@@ -52,7 +52,8 @@ function(req, res) {
   }
   
   patt <- paste0("^", userid, "_.*_session\\.json$")
-  file <- list.files("sessions", pattern = patt, full.names = TRUE)
+  dir <- paste0(api_key, "/sessions")
+  file <- list.files(dir, pattern = patt, full.names = TRUE)
   if (length(file) == 0) {
     res$status <- 404
     return(list(error = paste("No session file found for user:", userid)))
@@ -78,7 +79,8 @@ function(req, res, catName = NULL, user = NULL, from = NULL, to = NULL) {
     res$status <- 401
     return(list(error = "Invalid or missing API key"))
   }
-  files <- list.files("sessions", full.names = TRUE)
+  dir <- paste0(api_key, "/sessions")
+  files <- list.files(dir, full.names = TRUE)
   
   # cat name filtering
   if (!is.null(catName)) {
