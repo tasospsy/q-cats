@@ -67,7 +67,7 @@ function(req, res) {
   ## -- read csv if exists
   csvdest <- file.path(dir, "itembank.csv")
   if (file.exists(csvdest)) {
-    df <- read.csv(csvdest)
+    df <- read.csv(csvdest, colClasses = c(Scores = "character"))
     J <- nrow(df)
     cat("Itembank is loaded\n")
   } else {

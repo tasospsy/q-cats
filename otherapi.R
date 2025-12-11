@@ -164,7 +164,7 @@ function(req, res) {
   ## Model cat
   modeltype <- config$model 
   csvdest <- file.path(save_dir, "itembank.csv")
-  df <- read.csv(csvdest)
+  df <- read.csv(csvdest, colClasses = c(Scores = "character"))
   #@todo str(df) checks!
   if(0==0) { #@todo if Raw Data NOT uploaded..
     # use item parameters to construct the mirt object
