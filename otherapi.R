@@ -213,7 +213,7 @@ function(req, res){
     for (c in 1:responseOptions) {
       exampledf[[paste0("Choice", c)]] <- paste0("Option", c)
     }
-    if (categories>2) exampledf$Scores <- paste(0:(categories-1), collapse = "") 
+    if (categories>2) exampledf$Scores <- as.character(paste(0:(categories-1), collapse = "")) 
     if (categories==2) {
       exampledf$Scores <- paste(c("1", rep("0", responseOptions-1)), collapse = "")
     }
